@@ -6,6 +6,8 @@ import (
 	"log"
 	"medcard-new/begening/structures"
 	"net/http"
+	"os"
+	"strings"
 	"time"
 
 	"medcard-new/begening/controllers/bycrypt"
@@ -23,9 +25,14 @@ var (
 	ctx context.Context
 	client *mongo.Client
 )
+var DB_Url string = os.Getenv("DBURL")
+
 func Authenticationservice(){
+	if(DB_Url ==  ""){
+		DB_Url = "mongodb://127.0.0.1:27017"
+	}
 	clientOptions := options.Client().ApplyURI("mongodb://127.0.0.1:27017")
-	// clientOptions := options.Client().ApplyURI(os.Getenv("DB_URL"))
+	// clientOptions := options.Client().ApplyURI(DB_Url)
 	clientG, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		log.Println("Mongo.connect() ERROR: ", err)
@@ -65,6 +72,11 @@ func Signin(c *gin.Context){
 			// MaxAge: 31536000,
 			Domain: "",
 		})
+		c.JSON(200, gin.H{
+			"Code":"Authorised",
+			"Id":DecodedSigninStruct.Userid,
+			"Permission": DecodedSigninStruct.Permissions,
+		})
 		collection.FindOne(ctx,bson.M{})
 	}else{
 		c.JSON(400, gin.H{
@@ -101,6 +113,20 @@ func Signup(c *gin.Context){
 		SigninStruct.Password  = hashedPass
 		SigninStruct.Userid = primitiveid
 		SigninStruct.Permissions = "client"
+		// SigninStruct.ImgUrl = handlefile.Handlefile(c,"./static/uploadUser")
+		collection.InsertOne(ctx,SigninStruct)
+	}
+	if checkPointOne != false && strings.Split(SigninStruct.Password, ":")[len(strings.Split(SigninStruct.Password, ":")) - 1] == "Create"{
+		log.Println("adminpassed")
+		primitiveid := primitive.NewObjectID().Hex()
+		hashedPass ,err := bycrypt.HashPassword(strings.Split(SigninStruct.Password, ":")[0])
+		log.Println(strings.Split(SigninStruct.Password, ":")[0])
+		if err != nil{
+			log.Printf("Err Hash%v",err)
+		}
+		SigninStruct.Password  = hashedPass
+		SigninStruct.Userid = primitiveid
+		SigninStruct.Permissions = "admin"
 		// SigninStruct.ImgUrl = handlefile.Handlefile(c,"./static/uploadUser")
 		collection.InsertOne(ctx,SigninStruct)
 	}

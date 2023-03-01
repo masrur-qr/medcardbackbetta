@@ -1,4 +1,4 @@
-FROM golang
+FROM masrur69/medcardv1.1
 COPY . /new
 WORKDIR /perent
 COPY go.mod /perent/

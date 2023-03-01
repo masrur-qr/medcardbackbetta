@@ -4,12 +4,13 @@ package structures
 // import "go.mongodb.org/mongo-driver/bson/primitive"
 
 type Questions struct{
-	QuestionId string `bson:"_id"`
 	QuestionsText string  `json:"questiontext"`
 	QuestionsTitle string `json:"questiontitle"`
 	QuestionsAuthorName string `json:"questionauthorname"`
 }
 type Signin struct{
+	Userid string `bson:"_id"`
+	Permissions string `json:"permissions"`
 	Phone int32 `json:"phone"`
 	Password string `json:"password"`
 }
