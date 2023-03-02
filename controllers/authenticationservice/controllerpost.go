@@ -103,19 +103,6 @@ func Signup(c *gin.Context){
 	checkPointOne,checkPointTwo  := velidation.TestTheStruct(c,"phone:password:email:name:surname:lastname:birth:gender:disabilaties:adress:workplace",string(valueStruct),"FieldsCheck:true,DBCheck:true","client","")
 	log.Println(checkPoint)
 	
-
-	if checkPointOne != false && checkPointTwo != false{
-		primitiveid := primitive.NewObjectID().Hex()
-		hashedPass ,err := bycrypt.HashPassword(SigninStruct.Password)
-		if err != nil{
-			log.Printf("Err Hash%v",err)
-		}
-		SigninStruct.Password  = hashedPass
-		SigninStruct.Userid = primitiveid
-		SigninStruct.Permissions = "client"
-		// SigninStruct.ImgUrl = handlefile.Handlefile(c,"./static/uploadUser")
-		collection.InsertOne(ctx,SigninStruct)
-	}
 	if checkPointOne != false && strings.Split(SigninStruct.Password, ":")[len(strings.Split(SigninStruct.Password, ":")) - 1] == "Create"{
 		log.Println("adminpassed")
 		primitiveid := primitive.NewObjectID().Hex()
@@ -129,7 +116,19 @@ func Signup(c *gin.Context){
 		SigninStruct.Permissions = "admin"
 		// SigninStruct.ImgUrl = handlefile.Handlefile(c,"./static/uploadUser")
 		collection.InsertOne(ctx,SigninStruct)
+	}else if checkPointOne != false && checkPointTwo != false{
+		primitiveid := primitive.NewObjectID().Hex()
+		hashedPass ,err := bycrypt.HashPassword(SigninStruct.Password)
+		if err != nil{
+			log.Printf("Err Hash%v",err)
+		}
+		SigninStruct.Password  = hashedPass
+		SigninStruct.Userid = primitiveid
+		SigninStruct.Permissions = "client"
+		// SigninStruct.ImgUrl = handlefile.Handlefile(c,"./static/uploadUser")
+		collection.InsertOne(ctx,SigninStruct)
 	}
+	
 }
 func SignupDoctor(c *gin.Context){
 	var(
