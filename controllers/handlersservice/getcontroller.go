@@ -41,7 +41,7 @@ func GetDoctors(c *gin.Context) {
 	)
 	Authenticationservice()
 	collection := client.Database("MedCard").Collection("users")
-	cur, err := collection.Find(ctx, bson.M{"permissions":"doctor"})
+	cur, err := collection.Find(ctx, bson.M{"permissions":"doctors"})
 
 	if err != nil{
 		log.Printf("Err find Question%v\n",err)
@@ -70,7 +70,7 @@ func Statistics(c *gin.Context) {
 	if CookieData.Permissions == "admin" {
 		Authenticationservice()
 		collection := client.Database("MedCard").Collection("users")
-		cur, err := collection.Find(ctx, bson.M{"sta": "doctor"})
+		cur, err := collection.Find(ctx, bson.M{})
 
 		if err != nil {
 			log.Printf("Err find Question%v\n", err)
@@ -200,7 +200,7 @@ func GetClient(c *gin.Context) {
 		}
 		if ClientsDB.Name != "" {
 			log.Println(c.Request.URL.RawQuery)
-
+			ClientsDB.Password = "null"
 			c.JSON(200, gin.H{
 				"Code":  "Request Handeled",
 				"Json":  ClientsDB,

@@ -130,6 +130,26 @@ func Signup(c *gin.Context){
 	}
 	
 }
+func Signout(c gin.Context){
+	// """"""""""""""verify does the user has cookie or not""""""""""""""
+	// jwtauthentication.Velidation(c)
+	// var accept = Permission(c, payloadlogin.Login)
+	// get the data from the user for logout
+	// Finally, we set the client cookie for "token" as the JWT we just generated
+	// we also set an expiry time which is the same as the token itself
+	http.SetCookie(c.Writer, &http.Cookie{
+		Name:     "token",
+		Value:    "nul",
+		Expires:  time.Now().Add(-20 * time.Hour),
+		HttpOnly: false,
+		Secure:   true,
+		SameSite: http.SameSiteNoneMode,
+		Path:     "/",
+	})
+	c.JSON(200,gin.H{
+		"Code":"Succeded",
+	})
+}
 func SignupDoctor(c *gin.Context){
 	var(
 		// DecodedSigninStruct structures.Signup
