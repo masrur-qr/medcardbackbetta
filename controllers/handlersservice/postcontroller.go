@@ -99,11 +99,11 @@ func ProfileChange(c *gin.Context){
 	jsonFM := c.Request.FormValue("json")
 	files, handler, errIMG := c.Request.FormFile("img")
 	// """""""""""""""""""""""check The file on existense"""""""""""""""""""""""
-	if errIMG != nil {
-		c.JSON(409, gin.H{
-			"sttus": "NOIMGFILEEXIST",
-		})
-	}
+	// if errIMG != nil {
+	// 	c.JSON(409, gin.H{
+	// 		"sttus": "NOIMGFILEEXIST",
+	// 	})
+	// }
 
 	files.Seek(23, 23)
 	log.Printf("File Name %s\n", handler.Filename)
@@ -184,8 +184,8 @@ func ProfileChange(c *gin.Context){
 		var DecodedSigninStruct structures.Signup
 		json.Unmarshal([]byte(jsonFM), &ChangeStruct)
 		checkPointOne,checkPointTwo := velidation.TestTheStruct(c,"email:phone:password",string(valueStruct),"FieldsCheck:true,DBCheck:true","client",CookieData.Id)
-		log.Println(checkPointOne)
-		log.Println(checkPointTwo)
+		fmt.Printf("checkPointOne: %v\n", checkPointOne)
+		fmt.Printf("checkPointTwo: %v\n", checkPointTwo)
 		collection.FindOne(ctx,bson.M{"name":ChangeStruct.Name,"surname":ChangeStruct.Surname,"permissions":CookieData.Permissions}).Decode(&DecodedSigninStruct)
 		if checkPointOne != false && checkPointTwo == false{
 			hashedPass ,err := bycrypt.HashPassword(DecodedSigninStruct.Password)
