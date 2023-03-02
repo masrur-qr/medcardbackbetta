@@ -79,14 +79,14 @@ func TestTheStruct(c *gin.Context,Required string,valueStruct string,options str
 			if permission == "client"{
 				err := collection.FindOne(ctx,bson.M{"_id":ID,"permissions":permission}).Decode(&DecodedSigninStruct)
 				if err != nil{
-					c.JSON(400, gin.H{
+					c.JSON(200, gin.H{
 						"Code":"User not Found",
 					})
 				}
 			}else{
 				err := collection.FindOne(ctx,bson.M{"_id":ID,"permissions":permission}).Decode(&DecodedSigninStruct)
 				if err != nil{
-					c.JSON(400, gin.H{
+					c.JSON(200, gin.H{
 						"Code":"User not Found",
 					})
 				}
@@ -97,14 +97,14 @@ func TestTheStruct(c *gin.Context,Required string,valueStruct string,options str
 			if permission == "client"{
 				err := collection.FindOne(ctx,bson.M{"_id":ID,"permissions":permission}).Decode(&DecodedSigninStruct)
 				if err != nil{
-					c.JSON(400, gin.H{
+					c.JSON(200, gin.H{
 						"Code":"User not Found",
 					})
 				}
 			}else{
 				err := collection.FindOne(ctx,bson.M{"name":SigninStruct.Name,"surname":SigninStruct.Surname,"permissions":permission}).Decode(&DecodedSigninStruct)
 				if err != nil{
-					c.JSON(400, gin.H{
+					c.JSON(200, gin.H{
 						"Code":"User not Found",
 					})
 				}

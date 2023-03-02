@@ -71,7 +71,7 @@ func Statistics(c *gin.Context) {
 		Authenticationservice()
 		collection := client.Database("MedCard").Collection("users")
 		// ==================== List all users =========================
-		cur, err := collection.Find(ctx, bson.M{"permissions":"doctors"})
+		cur, err := collection.Find(ctx, bson.M{})
 
 		if err != nil {
 			log.Printf("Err find Question%v\n", err)
@@ -85,7 +85,7 @@ func Statistics(c *gin.Context) {
 			log.Println(StatisticsArr)
 		}
 		// ==================== List all doctors =========================
-		curDoc, err := collection.Find(ctx, bson.M{})
+		curDoc, err := collection.Find(ctx, bson.M{"permissions":"doctors"})
 
 		if err != nil {
 			log.Printf("Err find Question%v\n", err)
@@ -99,7 +99,7 @@ func Statistics(c *gin.Context) {
 			log.Println(StatisticsArrDoc)
 		}
 		// ==================== List all doctors =========================
-		curCl, err := collection.Find(ctx, bson.M{})
+		curCl, err := collection.Find(ctx, bson.M{"permissions":"client"})
 
 		if err != nil {
 			log.Printf("Err find Question%v\n", err)
