@@ -3,7 +3,9 @@ package controllers
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
+	"medcard-new/begening/controllers/bycrypt"
 	"medcard-new/begening/controllers/handlefile"
 	"medcard-new/begening/controllers/jwtgen"
 	"medcard-new/begening/controllers/velidation"
@@ -44,7 +46,7 @@ func Authenticationservice(){
 	}
 	log.Printf("DB URl%v\n",DB_Url)
 	log.Printf("DB URl%v\n",os.Getenv("DBURL"))
-	clientOptions := options.Client().ApplyURI("mongodb://192.168.130.28:27017")
+	clientOptions := options.Client().ApplyURI("mongodb://127.0.0.1:27017")
 	// clientOptions := options.Client().ApplyURI(os.Getenv("DBURL"))
 	clientG, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
@@ -179,23 +181,30 @@ func ProfileChange(c *gin.Context){
 		}
 	}else if CookieData.Permissions == "client"{
 		var ChangeStruct structures.Signup
+		var DecodedSigninStruct structures.Signup
 		json.Unmarshal([]byte(jsonFM), &ChangeStruct)
-		checkPointOne,checkPointTwo := velidation.TestTheStruct(c,"email:phone:password:name:surname:lastname:birth:gender:disabilaties:adress:workplace",string(valueStruct),"FieldsCheck:true,DBCheck:true","client",CookieData.Id)
+		checkPointOne,checkPointTwo := velidation.TestTheStruct(c,"email:phone:password",string(valueStruct),"FieldsCheck:true,DBCheck:true","client",CookieData.Id)
 		log.Println(checkPointOne)
 		log.Println(checkPointTwo)
+		collection.FindOne(ctx,bson.M{"name":ChangeStruct.Name,"surname":ChangeStruct.Surname,"permissions":CookieData.Permissions}).Decode(&DecodedSigninStruct)
 		if checkPointOne != false && checkPointTwo == false{
+			hashedPass ,err := bycrypt.HashPassword(DecodedSigninStruct.Password)
+				if err != nil{
+				log.Printf("Err Hash%v",err)
+			}
 			log.Printf("ds1%v\n",ChangeStruct)
-			ChangeStruct.Userid = CookieData.Id
-			ChangeStruct.Permissions = CookieData.Permissions
-			ChangeStruct.Password = DecodedSigninStruct.Password
+			DecodedSigninStruct.Userid = CookieData.Id
+			DecodedSigninStruct.Permissions = CookieData.Permissions
+			DecodedSigninStruct.Password = hashedPass
 			if errIMG != nil{
 				log.Printf("123%v\n",ChangeStruct)
-				ChangeStruct.ImgUrl = DecodedSigninStruct.ImgUrl
+				// ChangeStruct.ImgUrl = DecodedSigninStruct.ImgUrl
 			}else{
 				log.Printf("456%v\n",ChangeStruct)
-				ChangeStruct.ImgUrl = handlefile.Handlefile(c,"../static/upload")
+				DecodedSigninStruct.ImgUrl = handlefile.Handlefile(c,"../static/upload")
 			}
-			_ ,err := collection.ReplaceOne(ctx,bson.M{"_id":CookieData.Id},ChangeStruct)
+			fmt.Printf("DecodedSigninStruct: %v\n", DecodedSigninStruct)
+			_ ,err = collection.ReplaceOne(ctx,bson.M{"_id":CookieData.Id},DecodedSigninStruct)
 			if err != nil{
 				log.Printf("Err insert",err)
 			}
@@ -212,7 +221,7 @@ func Cors(c *gin.Context) {
 		redirect_url = "http://127.0.0.1:5502"
 	}
 	log.Printf("url%v\n",redirect_url)
-	c.Writer.Header().Set("Access-Control-Allow-Origin", "http://127.0.0.1:5502")
+	c.Writer.Header().Set("Access-Control-Allow-Origin", "http://127.0.0.1:5173")
 	c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 	c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, ResponseType, accept, origin, Cache-Control, X-Requested-With")
 	c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, PUT, DELETE")
