@@ -75,20 +75,41 @@ func TestTheStruct(c *gin.Context,Required string,valueStruct string,options str
 		Authenticationservice()
 		collection := client.Database("MedCard").Collection("users")
 		if ID != ""{
-			err := collection.FindOne(ctx,bson.M{"_id":ID,"name":SigninStruct.Name,"surname":SigninStruct.Surname,"permissions":permission}).Decode(&DecodedSigninStruct)
-			if err != nil{
-				c.JSON(400, gin.H{
-					"Code":"User not Found",
-				})
+			
+			if permission == "client"{
+				err := collection.FindOne(ctx,bson.M{"_id":ID,"permissions":permission}).Decode(&DecodedSigninStruct)
+				if err != nil{
+					c.JSON(400, gin.H{
+						"Code":"User not Found",
+					})
+				}
+			}else{
+				err := collection.FindOne(ctx,bson.M{"_id":ID,"permissions":permission}).Decode(&DecodedSigninStruct)
+				if err != nil{
+					c.JSON(400, gin.H{
+						"Code":"User not Found",
+					})
+				}
 			}
 			log.Println("ss")
 		}else{
-			err := collection.FindOne(ctx,bson.M{"name":SigninStruct.Name,"surname":SigninStruct.Surname,"permissions":permission}).Decode(&DecodedSigninStruct)
-			if err != nil{
-				c.JSON(400, gin.H{
-					"Code":"User not Found",
-				})
+			
+			if permission == "client"{
+				err := collection.FindOne(ctx,bson.M{"_id":ID,"permissions":permission}).Decode(&DecodedSigninStruct)
+				if err != nil{
+					c.JSON(400, gin.H{
+						"Code":"User not Found",
+					})
+				}
+			}else{
+				err := collection.FindOne(ctx,bson.M{"name":SigninStruct.Name,"surname":SigninStruct.Surname,"permissions":permission}).Decode(&DecodedSigninStruct)
+				if err != nil{
+					c.JSON(400, gin.H{
+						"Code":"User not Found",
+					})
+				}
 			}
+			
 			log.Println("err")
 		}
 		if DecodedSigninStruct.Name == ""{
