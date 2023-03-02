@@ -116,6 +116,10 @@ func Signup(c *gin.Context){
 		SigninStruct.Permissions = "admin"
 		// SigninStruct.ImgUrl = handlefile.Handlefile(c,"./static/uploadUser")
 		collection.InsertOne(ctx,SigninStruct)
+		//------------------------------------ Send success-----------------------------------
+		c.JSON(200,gin.H{
+			"Code":"Succeded",
+		})
 	}else if checkPointOne != false && checkPointTwo != false{
 		primitiveid := primitive.NewObjectID().Hex()
 		hashedPass ,err := bycrypt.HashPassword(SigninStruct.Password)
@@ -127,16 +131,14 @@ func Signup(c *gin.Context){
 		SigninStruct.Permissions = "client"
 		// SigninStruct.ImgUrl = handlefile.Handlefile(c,"./static/uploadUser")
 		collection.InsertOne(ctx,SigninStruct)
+		//------------------------------------ Send success-----------------------------------
+		c.JSON(200,gin.H{
+			"Code":"Succeded",
+		})
 	}
 	
 }
-func Signout(c gin.Context){
-	// """"""""""""""verify does the user has cookie or not""""""""""""""
-	// jwtauthentication.Velidation(c)
-	// var accept = Permission(c, payloadlogin.Login)
-	// get the data from the user for logout
-	// Finally, we set the client cookie for "token" as the JWT we just generated
-	// we also set an expiry time which is the same as the token itself
+func Signout(c *gin.Context){
 	http.SetCookie(c.Writer, &http.Cookie{
 		Name:     "token",
 		Value:    "nul",
@@ -149,6 +151,38 @@ func Signout(c gin.Context){
 	c.JSON(200,gin.H{
 		"Code":"Succeded",
 	})
+}
+func LoginCheck(c *gin.Context){
+	var User structures.Signup
+	c.ShouldBindJSON(&User)
+	// """"""""""""""""""""""""""""""""""DB CONNECTION""""""""""""""""""""""""""""""""""""""""""""""""""""
+	Authenticationservice()
+	collection := client.Database("MedCard").Collection("users")
+	// """"""""""""""""""""""""""""""""""DB CONNECTION""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+	CookieData := jwtgen.Velidation(c)
+	type SendData struct {
+		Name string `json:"name"`
+		Surname string `json:"surname"`
+		Lastname string `json:"lastname"`
+		Userid string `bson:"_id"`
+		ImgUrl string `json:"imgurl"`
+	}
+
+	var DecodedSigninStruct SendData
+	collection.FindOne(ctx,bson.M{"_id":CookieData.Id}).Decode(&DecodedSigninStruct)
+
+	if DecodedSigninStruct.Name != ""{
+		
+		c.JSON(200,gin.H{
+			"Code":"Succeded",
+			"Json": DecodedSigninStruct,
+		})
+	}else{
+		c.JSON(505,gin.H{
+			"Code":"You_are_not_authorized",
+		})
+	}
 }
 func SignupDoctor(c *gin.Context){
 	var(

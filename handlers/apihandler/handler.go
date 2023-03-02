@@ -21,6 +21,8 @@ func Handlers(){
 
 	r.POST("/signup",authenticationservice.Signup)
 	r.POST("/signin",authenticationservice.Signin)
+	r.POST("/signout",authenticationservice.Signout)
+	r.POST("/logincheck",authenticationservice.LoginCheck)
 	r.POST("/signupdoctor",authenticationservice.SignupDoctor)
 	r.POST("/handleviews",ehrcontroller.DoctorClientForView)
 	r.POST("/filesadd",ehrcontroller.AddFilesToEhr)
