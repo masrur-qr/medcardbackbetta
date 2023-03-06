@@ -67,6 +67,7 @@ type Views struct{
 	DoctorId string `json:"doctorid"`
 	Sickness string `json:"sickness"`
 	Date string `json:"date"`
+	Phone int32 `json:"phone"`
 }
 type File struct{
 	Id string `json:"id" bson:"_id"`

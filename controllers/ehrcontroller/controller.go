@@ -52,7 +52,7 @@ func DoctorClientForView(c *gin.Context){
 	}
 
 	if CookieData.Permissions == "client"{
-		isPassedFields , _ := velidation.TestTheStruct(c,"clientFLSname:clientid:doctorid:sickness",string(stringJSON),"FieldsCheck:true,DBCheck:false","","")
+		isPassedFields , _ := velidation.TestTheStruct(c,"clientFLSname:clientid:doctorid:sickness:phone",string(stringJSON),"FieldsCheck:true,DBCheck:false","","")
 
 		// """"""""""""""""""""""""""""""""""DB CONNECTION""""""""""""""""""""""""""""""""""""""""""""""""""""
 		Authenticationservice()
