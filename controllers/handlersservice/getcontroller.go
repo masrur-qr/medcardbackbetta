@@ -249,7 +249,7 @@ func GetClient(c *gin.Context) {
 		// })
 		Authenticationservice()
 		collection := client.Database("MedCard").Collection("users")
-		err := collection.FindOne(ctx, bson.M{"_id": c.Request.URL.RawQuery}).Decode(&DoctorDB)
+		err := collection.FindOne(ctx, bson.M{"_id": CookieData.Id}).Decode(&DoctorDB)
 
 		if err != nil{
 			log.Printf("Err find user %v\n", err)
