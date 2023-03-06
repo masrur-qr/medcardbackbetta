@@ -79,7 +79,7 @@ func InsertQuestions(c *gin.Context){
 	}
 	
 	checkPointOne,checkPointTwo := velidation.TestTheStruct(c,"questiontitle:questiontext:questionauthorname",string(valueStruct),"FieldsCheck:true,DBCheck:false","","")
-	if checkPointOne != false && checkPointTwo != true && QuestionsDb.QuestionsTitle == ""{
+	if checkPointOne != false && checkPointTwo != true{
 		var primitiveId = primitive.NewObjectID().Hex()
 		Questions.QuestionId = primitiveId
 	
