@@ -203,6 +203,7 @@ func GetViews(c *gin.Context) {
 func GetClient(c *gin.Context) {
 	var (
 		ClientsDB structures.Signup
+		DoctorDB structures.SignupDoctor
 		Files     structures.File
 	)
 	// ==================== Cookie validation =========================
@@ -248,17 +249,17 @@ func GetClient(c *gin.Context) {
 		// })
 		Authenticationservice()
 		collection := client.Database("MedCard").Collection("users")
-		err := collection.FindOne(ctx, bson.M{"_id": c.Request.URL.RawQuery}).Decode(&ClientsDB)
+		err := collection.FindOne(ctx, bson.M{"_id": c.Request.URL.RawQuery}).Decode(&DoctorDB)
 
 		if err != nil{
 			log.Printf("Err find user %v\n", err)
 		}
-		if ClientsDB.Name != "" {
+		if DoctorDB.Name != "" {
 			log.Println(c.Request.URL.RawQuery)
-			ClientsDB.Password = "null"
+			DoctorDB.Password = "null"
 			c.JSON(200, gin.H{
 				"Code":  "Request Handeled",
-				"Json":  ClientsDB,
+				"Json":  DoctorDB,
 			})
 		} else {
 			c.JSON(400, gin.H{
