@@ -210,7 +210,7 @@ func GetClient(c *gin.Context) {
 
 	log.Println(CookieData.Permissions)
 
-	if CookieData.Permissions == "client" || CookieData.Permissions == "doctor" {
+	if CookieData.Permissions == "client"{
 		Authenticationservice()
 		collection := client.Database("MedCard").Collection("users")
 		err := collection.FindOne(ctx, bson.M{"_id": c.Request.URL.RawQuery}).Decode(&ClientsDB)
@@ -242,9 +242,28 @@ func GetClient(c *gin.Context) {
 				"Code": "User NotFound",
 			})
 		}
-	} else {
-		c.JSON(400, gin.H{
-			"Code": "No Permissions",
-		})
+	}else {
+		// c.JSON(400, gin.H{
+		// 	"Code": "No Permissions",
+		// })
+		Authenticationservice()
+		collection := client.Database("MedCard").Collection("users")
+		err := collection.FindOne(ctx, bson.M{"_id": c.Request.URL.RawQuery}).Decode(&ClientsDB)
+
+		if err != nil{
+			log.Printf("Err find user %v\n", err)
+		}
+		if ClientsDB.Name != "" {
+			log.Println(c.Request.URL.RawQuery)
+			ClientsDB.Password = "null"
+			c.JSON(200, gin.H{
+				"Code":  "Request Handeled",
+				"Json":  ClientsDB,
+			})
+		} else {
+			c.JSON(400, gin.H{
+				"Code": "User NotFound",
+			})
+		}
 	}
 }
