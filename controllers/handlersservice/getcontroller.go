@@ -162,7 +162,7 @@ func GetClients(c *gin.Context) {
 }
 func GetViews(c *gin.Context) {
 	var (
-		EHRFileDB structures.File
+		EHRFileDB structures.Views
 		cur       *mongo.Cursor
 		err       error
 	)
@@ -183,7 +183,7 @@ func GetViews(c *gin.Context) {
 		}
 		defer cur.Close(ctx)
 
-		var EHRFileDBArr []structures.File
+		var EHRFileDBArr []structures.Views
 		for cur.Next(ctx) {
 			cur.Decode(&EHRFileDB)
 			EHRFileDBArr = append(EHRFileDBArr, EHRFileDB)
@@ -244,12 +244,29 @@ func GetClient(c *gin.Context) {
 			})
 		}
 	}else {
-		// c.JSON(400, gin.H{
-		// 	"Code": "No Permissions",
-		// })
+		// ? ========================================== get Client data ============================
+		Authenticationservice()
+		collectionCli := client.Database("MedCard").Collection("users")
+		err := collectionCli.FindOne(ctx, bson.M{"_id": c.Request.URL.RawQuery}).Decode(&ClientsDB)
+
+		collectionView := client.Database("MedCard").Collection("ehrfiles")
+		cur, errTwo := collectionView.Find(ctx, bson.M{"clientid": c.Request.URL.RawQuery})
+
+		defer cur.Close(ctx)
+
+		var ViewsArr []structures.File
+		for cur.Next(ctx) {
+			cur.Decode(&Files)
+			ViewsArr = append(ViewsArr, Files)
+		}
+
+		if err != nil || errTwo != nil {
+			log.Printf("Err find user %v\n", err)
+		}
+		// ? ================================== Get doctor data ==========================
 		Authenticationservice()
 		collection := client.Database("MedCard").Collection("users")
-		err := collection.FindOne(ctx, bson.M{"_id": CookieData.Id}).Decode(&DoctorDB)
+		err = collection.FindOne(ctx, bson.M{"_id": CookieData.Id}).Decode(&DoctorDB)
 
 		if err != nil{
 			log.Printf("Err find user %v\n", err)
@@ -259,6 +276,8 @@ func GetClient(c *gin.Context) {
 			DoctorDB.Password = "null"
 			c.JSON(200, gin.H{
 				"Code":  "Request Handeled",
+				"UserJson":  ClientsDB,
+				"Files": ViewsArr,
 				"Json":  DoctorDB,
 			})
 		} else {
