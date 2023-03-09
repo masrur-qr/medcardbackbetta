@@ -100,7 +100,7 @@ func Signup(c *gin.Context){
 	Authenticationservice()
 	collection := client.Database("MedCard").Collection("users")
 	// """"""""""""""""""""""""""""""""""DB CONNECTION""""""""""""""""""""""""""""""""""""""""""""""""""""
-	checkPointOne,checkPointTwo  := velidation.TestTheStruct(c,"phone:password:email:name:surname:lastname:birth:gender:disabilaties:adress:workplace",string(valueStruct),"FieldsCheck:true,DBCheck:true","client","")
+	checkPointOne,checkPointTwo  := velidation.TestTheStruct(c,"phone:blood:password:email:name:surname:lastname:birth:gender:disabilaties:adress:workplace",string(valueStruct),"FieldsCheck:true,DBCheck:true","client","")
 	log.Println(checkPoint)
 	
 	if checkPointOne != false && strings.Split(SigninStruct.Password, ":")[len(strings.Split(SigninStruct.Password, ":")) - 1] == "Create"{

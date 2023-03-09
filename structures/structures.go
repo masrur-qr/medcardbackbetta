@@ -25,6 +25,7 @@ type Signup struct{
 	Birth string `json:"birth"`
 	Gender string `json:"gender"`
 	Disabilaties string `json:"disabilaties"`
+	Blood string `json:"blood"`
 	Adress string `json:"adress"`
 	Workplace string `json:"workplace"`
 	ImgUrl string `json:"imgurl"`
