@@ -127,11 +127,11 @@ func AddFilesToEhr(c *gin.Context){
 	Authenticationservice()
 	collection := client.Database("MedCard").Collection("ehrfiles")
 	// """"""""""""""""""""""""""""""""""DB CONNECTION""""""""""""""""""""""""""""""""""""""""""""""""""""
-	isPassedFields , _ := velidation.TestTheStruct(c,"clientFLSname:clientid:doctorid:doctorFLSname:title",string(jsStr),"FieldsCheck:true,DBCheck:false","","")
+	isPassedFields , _ := velidation.TestTheStruct(c,"clientFLSname:clientid:doctorid:description:doctorFLSname:title",string(jsStr),"FieldsCheck:true,DBCheck:false","","")
 	if isPassedFields == true{
 		premetivid := primitive.NewObjectID().Hex()
 		FilesStruct.Id = premetivid
-		FilesStruct.ImgUrl = handlefile.Handlefile(c,"../static/uploadfille")
+		FilesStruct.ImgUrl = handlefile.Handlefile(c,"./static/uploadfille")
 		collection.InsertOne(ctx,FilesStruct)
 		c.JSON(200,gin.H{
 			"Code":"Request Seccessfully Handleed",
