@@ -97,7 +97,7 @@ func ProfileChange(c *gin.Context) {
 		DecodedSigninStruct structures.SignupDoctor
 	)
 	jsonFM := c.Request.FormValue("json")
-	files, handler, errIMG := c.Request.FormFile("img")
+	_, _, errIMG := c.Request.FormFile("img")
 	// """""""""""""""""""""""check The file on existense"""""""""""""""""""""""
 	// if errIMG != nil {
 	// 	c.JSON(409, gin.H{
@@ -105,8 +105,8 @@ func ProfileChange(c *gin.Context) {
 	// 	})
 	// }
 
-	files.Seek(23, 23)
-	log.Printf("File Name %s\n", handler.Filename)
+	// files.Seek(23, 23)
+	// log.Printf("File Name %s\n", handler.Filename)
 	// """""""""""""""""""""bind the request data into structure"""""""""""""""""""""
 	json.Unmarshal([]byte(jsonFM), &ChangeStruct)
 	// ChangeStruct.ImgUrl = handlefile.Handlefile(c,"../../static/upload")
