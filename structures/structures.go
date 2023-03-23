@@ -40,6 +40,7 @@ type SignupDoctor struct {
 	Surname     string    `json:"surname"`
 	Lastname    string    `json:"lastname"`
 	Position    string    `json:"position"`
+	Experience    string    `json:"experience"`
 	Biography   string    `json:"biography"`
 	Adress      string    `json:"adress"`
 	Permissions string    `json:"permissions"`
