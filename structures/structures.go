@@ -49,6 +49,7 @@ type SignupDoctor struct {
 type History struct {
 	Year     string `json:"year"`
 	Position string `json:"position"`
+	Description string `json:"description"`
 }
 type Admin struct {
 	Userid      string `bson:"_id"`
