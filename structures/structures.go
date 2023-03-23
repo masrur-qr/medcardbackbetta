@@ -32,19 +32,19 @@ type Signup struct {
 	Permissions  string `json:"permissions"`
 }
 type SignupDoctor struct {
-	Userid      string `bson:"_id"`
-	Phone       int32  `json:"phone"`
-	Password    string `json:"password"`
-	Email       string `json:"email"`
-	Name        string `json:"name"`
-	Surname     string `json:"surname"`
-	Lastname    string `json:"lastname"`
-	Position    string `json:"position"`
-	Biography   string `json:"biography"`
-	Adress      string `json:"adress"`
-	Permissions string `json:"permissions"`
-	ImgUrl      string `json:"imgurl"`
-	History     []History
+	Userid      string    `bson:"_id"`
+	Phone       int32     `json:"phone"`
+	Password    string    `json:"password"`
+	Email       string    `json:"email"`
+	Name        string    `json:"name"`
+	Surname     string    `json:"surname"`
+	Lastname    string    `json:"lastname"`
+	Position    string    `json:"position"`
+	Biography   string    `json:"biography"`
+	Adress      string    `json:"adress"`
+	Permissions string    `json:"permissions"`
+	ImgUrl      string    `json:"imgurl"`
+	History     []History 
 }
 type History struct {
 	Year     string `json:"year"`

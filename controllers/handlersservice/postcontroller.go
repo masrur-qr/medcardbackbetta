@@ -109,6 +109,7 @@ func ProfileChange(c *gin.Context) {
 	// log.Printf("File Name %s\n", handler.Filename)
 	// """""""""""""""""""""bind the request data into structure"""""""""""""""""""""
 	json.Unmarshal([]byte(jsonFM), &ChangeStruct)
+	fmt.Printf("ChangeStruct: %v\n", ChangeStruct)
 	// ChangeStruct.ImgUrl = handlefile.Handlefile(c,"../../static/upload")
 
 	// """""""""""""""""""""bind the request data into structure"""""""""""""""""""""
@@ -159,11 +160,17 @@ func ProfileChange(c *gin.Context) {
 		}
 	} else if CookieData.Permissions == "doctor" {
 		var ChangeStruct structures.SignupDoctor
+		// var ChangeStructHistory structures.History
 		json.Unmarshal([]byte(jsonFM), &ChangeStruct)
-		checkPointOne, checkPointTwo := velidation.TestTheStruct(c, "phone::name:surname:lastname:position:adress:biography:email", string(valueStruct), "FieldsCheck:true,DBCheck:true", "doctor", CookieData.Id)
+		// json.Unmarshal([]byte(jsonFM), &ChangeStructHistory)
+		// c.ShouldBindJSON(&ChangeStruct)
+		log.Printf("ds2%v\n", ChangeStruct)
+		// log.Printf("ds3%v\n", ChangeStructHistory)
+		checkPointOne, checkPointTwo := velidation.TestTheStruct(c, "phone:name:surname:lastname:position:adress:biography:email", string(valueStruct), "FieldsCheck:true,DBCheck:true", "doctor", CookieData.Id)
 		log.Println(CheckpointPassed)
 		if checkPointOne != false && checkPointTwo == false {
 			log.Printf("ds1%v\n", ChangeStruct)
+			// log.Printf("ds2%v\n", ChangeStructHistory)
 			ChangeStruct.Userid = CookieData.Id
 			ChangeStruct.Permissions = CookieData.Permissions
 			if ChangeStruct.Password == "" {
@@ -176,17 +183,17 @@ func ProfileChange(c *gin.Context) {
 				}
 				ChangeStruct.Password = hashedPass
 			}
-			if errIMG == nil {
+			if errIMG != nil {
 				log.Printf("123%v\n", ChangeStruct)
 				ChangeStruct.ImgUrl = DecodedSigninStruct.ImgUrl
 			} else {
 				log.Printf("456%v\n", ChangeStruct)
 				ChangeStruct.ImgUrl = handlefile.Handlefile(c, "../static/upload")
 			}
-			ChangeStruct.History = append(ChangeStruct.History, structures.History{
-				Year:     "2022-12",
-				Position: "jfdfdd",
-			})
+			// ChangeStruct.History = append(ChangeStruct.History, structures.History{
+			// 	Year:     "2022-12",
+			// 	Position: "jfdfdd",
+			// })
 			_, err = collection.ReplaceOne(ctx, bson.M{"_id": CookieData.Id}, ChangeStruct)
 			if err != nil {
 				log.Printf("Err insert", err)
@@ -200,20 +207,22 @@ func ProfileChange(c *gin.Context) {
 		var ChangeStruct structures.Signup
 		var DecodedSigninStruct structures.Signup
 		json.Unmarshal([]byte(jsonFM), &ChangeStruct)
-		checkPointOne, checkPointTwo := velidation.TestTheStruct(c, "email:phone:password", string(valueStruct), "FieldsCheck:true,DBCheck:true", "client", CookieData.Id)
+		checkPointOne, checkPointTwo := velidation.TestTheStruct(c, "email:phone", string(valueStruct), "FieldsCheck:true,DBCheck:true", "client", CookieData.Id)
 		fmt.Printf("checkPointOne: %v\n", checkPointOne)
 		fmt.Printf("checkPointTwo: %v\n", checkPointTwo)
 		collection.FindOne(ctx, bson.M{"name": ChangeStruct.Name, "surname": ChangeStruct.Surname, "permissions": CookieData.Permissions}).Decode(&DecodedSigninStruct)
 		if checkPointOne != false && checkPointTwo == false {
 			log.Printf("ds1%v\n", ChangeStruct)
-			DecodedSigninStruct.Userid = CookieData.Id
-			DecodedSigninStruct.Permissions = CookieData.Permissions
+			ChangeStruct.Userid = CookieData.Id
+			ChangeStruct.Permissions = CookieData.Permissions
 			if ChangeStruct.Password != "" {
 				hashedPass, err := bycrypt.HashPassword(ChangeStruct.Password)
 				if err != nil {
 					log.Printf("Err Hash%v", err)
 				}
-				DecodedSigninStruct.Password = hashedPass
+				ChangeStruct.Password = hashedPass
+			}else{
+				ChangeStruct.Password = DecodedSigninStruct.Password
 			}
 			if errIMG != nil {
 				log.Printf("123%v\n", ChangeStruct)
@@ -223,7 +232,7 @@ func ProfileChange(c *gin.Context) {
 				DecodedSigninStruct.ImgUrl = handlefile.Handlefile(c, "../static/upload")
 			}
 			fmt.Printf("DecodedSigninStruct: %v\n", DecodedSigninStruct)
-			_, err = collection.ReplaceOne(ctx, bson.M{"_id": CookieData.Id}, DecodedSigninStruct)
+			_, err = collection.ReplaceOne(ctx, bson.M{"_id": CookieData.Id}, ChangeStruct)
 			if err != nil {
 				log.Printf("Err insert", err)
 			}
