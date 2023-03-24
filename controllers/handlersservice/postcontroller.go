@@ -147,7 +147,8 @@ func ProfileChange(c *gin.Context) {
 			if errIMG != nil {
 				ChangeStruct.ImgUrl = DecodedSigninStruct.ImgUrl
 			} else {
-				ChangeStruct.ImgUrl = handlefile.Handlefile(c, "../static/upload")
+				imgid := handlefile.Handlefile(c, "./static/upload")
+				ChangeStruct.ImgUrl = imgid
 			}
 			_, err = collection.ReplaceOne(ctx, bson.M{"_id": CookieData.Id}, ChangeStruct)
 			if err != nil {
@@ -188,7 +189,8 @@ func ProfileChange(c *gin.Context) {
 				ChangeStruct.ImgUrl = DecodedSigninStruct.ImgUrl
 			} else {
 				log.Printf("456%v\n", ChangeStruct)
-				ChangeStruct.ImgUrl = handlefile.Handlefile(c, "../static/upload")
+				imgid := handlefile.Handlefile(c, "./static/upload")
+				ChangeStruct.ImgUrl = imgid
 			}
 			// ChangeStruct.History = append(ChangeStruct.History, structures.History{
 			// 	Year:     "2022-12",
@@ -229,7 +231,8 @@ func ProfileChange(c *gin.Context) {
 				// ChangeStruct.ImgUrl = DecodedSigninStruct.ImgUrl
 			} else {
 				log.Printf("456%v\n", ChangeStruct)
-				DecodedSigninStruct.ImgUrl = handlefile.Handlefile(c, "../static/upload")
+				imgid := handlefile.Handlefile(c, "./static/upload")
+				DecodedSigninStruct.ImgUrl = imgid
 			}
 			fmt.Printf("DecodedSigninStruct: %v\n", DecodedSigninStruct)
 			_, err = collection.ReplaceOne(ctx, bson.M{"_id": CookieData.Id}, ChangeStruct)
