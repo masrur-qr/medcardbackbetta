@@ -21,14 +21,15 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
+
 var (
-	ctx context.Context
+	ctx    context.Context
 	client *mongo.Client
 )
 var DB_Url string = os.Getenv("DBURL")
 
-func Authenticationservice(){
-	if(DB_Url ==  ""){
+func Authenticationservice() {
+	if DB_Url == "" {
 		DB_Url = "mongodb://127.0.0.1:27017"
 	}
 	clientOptions := options.Client().ApplyURI("mongodb://127.0.0.1:27017")
@@ -42,28 +43,28 @@ func Authenticationservice(){
 	ctx = ctxG
 	client = clientG
 }
-func Signin(c *gin.Context){
-	var SignupStruct  structures.Signin
+func Signin(c *gin.Context) {
+	var SignupStruct structures.Signin
 	c.ShouldBindJSON(&SignupStruct)
-	log.Printf("str %v\n",SignupStruct)
+	log.Printf("str %v\n", SignupStruct)
 
 	// """"""""""""""""""""""""""""""""""DB CONNECTION""""""""""""""""""""""""""""""""""""""""""""""""""""
 	Authenticationservice()
 	collection := client.Database("MedCard").Collection("users")
 	// """"""""""""""""""""""""""""""""""DB CONNECTION""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-	valueStruct , err := json.Marshal(SignupStruct)
-	if err != nil{
-		log.Printf("Marshel Eror %v\n",err)
+	valueStruct, err := json.Marshal(SignupStruct)
+	if err != nil {
+		log.Printf("Marshel Eror %v\n", err)
 	}
-	var DecodedSigninStruct  structures.Signin
-	checkPointOne,checkPointTwo := velidation.TestTheStruct(c,"phone:password",string(valueStruct),"FieldsCheck:true,DBCheck:false","","")
-	collection.FindOne(ctx,bson.M{"phone":SignupStruct.Phone}).Decode(&DecodedSigninStruct)
-	passwordCHeck := bycrypt.CompareHashPasswords(DecodedSigninStruct.Password,SignupStruct.Password)
-	if checkPointOne != false && checkPointTwo != true && DecodedSigninStruct.Password != "" && passwordCHeck != false{
+	var DecodedSigninStruct structures.Signin
+	checkPointOne, checkPointTwo := velidation.TestTheStruct(c, "phone:password", string(valueStruct), "FieldsCheck:true,DBCheck:false", "", "")
+	collection.FindOne(ctx, bson.M{"phone": SignupStruct.Phone}).Decode(&DecodedSigninStruct)
+	passwordCHeck := bycrypt.CompareHashPasswords(DecodedSigninStruct.Password, SignupStruct.Password)
+	if checkPointOne != false && checkPointTwo != true && DecodedSigninStruct.Password != "" && passwordCHeck != false {
 		http.SetCookie(c.Writer, &http.Cookie{
 			Name:     "token",
-			Value:    jwtgen.GenerateToken(c,SignupStruct.Phone),
+			Value:    jwtgen.GenerateToken(c, SignupStruct.Phone),
 			Expires:  time.Now().Add(30 * time.Hour),
 			HttpOnly: false,
 			Secure:   false,
@@ -73,72 +74,72 @@ func Signin(c *gin.Context){
 			Domain: "",
 		})
 		c.JSON(200, gin.H{
-			"Code":"Authorised",
-			"Id":DecodedSigninStruct.Userid,
+			"Code":       "Authorised",
+			"Id":         DecodedSigninStruct.Userid,
 			"Permission": DecodedSigninStruct.Permissions,
 		})
-		collection.FindOne(ctx,bson.M{})
-	}else{
+		collection.FindOne(ctx, bson.M{})
+	} else {
 		c.JSON(400, gin.H{
-			"Code":"Aannot_Authorised",
+			"Code": "Aannot_Authorised",
 		})
 	}
 }
-func Signup(c *gin.Context){
-	var(
-	//   DecodedSigninStruct structures.Signup
-	  SigninStruct  structures.Signup
-	  checkPoint bool
-	) 
+func Signup(c *gin.Context) {
+	var (
+		//   DecodedSigninStruct structures.Signup
+		SigninStruct structures.Signup
+		checkPoint   bool
+	)
 	c.ShouldBindJSON(&SigninStruct)
-	log.Printf("Marshel Eror %v\n",SigninStruct)
-	valueStruct , err := json.Marshal(SigninStruct)
-	if err != nil{
-		log.Printf("Marshel Eror %v\n",err)
+	log.Printf("Marshel Eror %v\n", SigninStruct)
+	valueStruct, err := json.Marshal(SigninStruct)
+	if err != nil {
+		log.Printf("Marshel Eror %v\n", err)
 	}
 	// """"""""""""""""""""""""""""""""""DB CONNECTION""""""""""""""""""""""""""""""""""""""""""""""""""""
 	Authenticationservice()
 	collection := client.Database("MedCard").Collection("users")
 	// """"""""""""""""""""""""""""""""""DB CONNECTION""""""""""""""""""""""""""""""""""""""""""""""""""""
-	checkPointOne,checkPointTwo  := velidation.TestTheStruct(c,"phone:blood:password:email:name:surname:lastname:birth:gender:disabilaties:adress:workplace",string(valueStruct),"FieldsCheck:true,DBCheck:true","client","")
+	checkPointOne, checkPointTwo := velidation.TestTheStruct(c, "phone:blood:password:email:name:surname:lastname:birth:gender:disabilaties:adress:workplace", string(valueStruct), "FieldsCheck:true,DBCheck:true", "client", "")
 	log.Println(checkPoint)
-	
-	if checkPointOne != false && strings.Split(SigninStruct.Password, ":")[len(strings.Split(SigninStruct.Password, ":")) - 1] == "Create"{
+
+	if checkPointOne != false && strings.Split(SigninStruct.Password, ":")[len(strings.Split(SigninStruct.Password, ":"))-1] == "Create" {
 		log.Println("adminpassed")
 		primitiveid := primitive.NewObjectID().Hex()
-		hashedPass ,err := bycrypt.HashPassword(strings.Split(SigninStruct.Password, ":")[0])
+		hashedPass, err := bycrypt.HashPassword(strings.Split(SigninStruct.Password, ":")[0])
 		log.Println(strings.Split(SigninStruct.Password, ":")[0])
-		if err != nil{
-			log.Printf("Err Hash%v",err)
+		if err != nil {
+			log.Printf("Err Hash%v", err)
 		}
-		SigninStruct.Password  = hashedPass
+		SigninStruct.Password = hashedPass
 		SigninStruct.Userid = primitiveid
 		SigninStruct.Permissions = "admin"
 		// SigninStruct.ImgUrl = handlefile.Handlefile(c,"./static/uploadUser")
-		collection.InsertOne(ctx,SigninStruct)
+		collection.InsertOne(ctx, SigninStruct)
 		//------------------------------------ Send success-----------------------------------
-		c.JSON(200,gin.H{
-			"Code":"Succeded",
+		c.JSON(200, gin.H{
+			"Code": "Succeded",
 		})
-	}else if checkPointOne != false && checkPointTwo != false{
+	} else if checkPointOne != false && checkPointTwo != false {
 		primitiveid := primitive.NewObjectID().Hex()
-		hashedPass ,err := bycrypt.HashPassword(SigninStruct.Password)
-		if err != nil{
-			log.Printf("Err Hash%v",err)
+		hashedPass, err := bycrypt.HashPassword(SigninStruct.Password)
+		if err != nil {
+			log.Printf("Err Hash%v", err)
 		}
-		SigninStruct.Password  = hashedPass
+		SigninStruct.Password = hashedPass
 		SigninStruct.Userid = primitiveid
 		SigninStruct.Permissions = "client"
 		// SigninStruct.ImgUrl = handlefile.Handlefile(c,"./static/uploadUser")
-		collection.InsertOne(ctx,SigninStruct)
+		collection.InsertOne(ctx, SigninStruct)
 		//------------------------------------ Send success-----------------------------------
-		c.JSON(200,gin.H{
-			"Code":"Succeded",
+		c.JSON(200, gin.H{
+			"Code": "Succeded",
 		})
 	}
-	
+
 }
-func Signout(c *gin.Context){
+func Signout(c *gin.Context) {
 	http.SetCookie(c.Writer, &http.Cookie{
 		Name:     "token",
 		Value:    "nul",
@@ -148,11 +149,11 @@ func Signout(c *gin.Context){
 		SameSite: http.SameSiteNoneMode,
 		Path:     "/",
 	})
-	c.JSON(200,gin.H{
-		"Code":"Succeded",
+	c.JSON(200, gin.H{
+		"Code": "Succeded",
 	})
 }
-func LoginCheck(c *gin.Context){
+func LoginCheck(c *gin.Context) {
 	var User structures.Signup
 	c.ShouldBindJSON(&User)
 	// """"""""""""""""""""""""""""""""""DB CONNECTION""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -162,34 +163,35 @@ func LoginCheck(c *gin.Context){
 
 	CookieData := jwtgen.Velidation(c)
 	type SendData struct {
-		Name string `json:"name"`
-		Surname string `json:"surname"`
-		Lastname string `json:"lastname"`
-		Userid string `bson:"_id"`
-		ImgUrl string `json:"imgurl"`
+		Name        string `json:"name"`
+		Surname     string `json:"surname"`
+		Lastname    string `json:"lastname"`
+		Userid      string `bson:"_id"`
+		ImgUrl      string `json:"imgurl"`
+		Permissions string `json:"permissions"`
 	}
 
 	var DecodedSigninStruct SendData
-	collection.FindOne(ctx,bson.M{"_id":CookieData.Id}).Decode(&DecodedSigninStruct)
+	collection.FindOne(ctx, bson.M{"_id": CookieData.Id}).Decode(&DecodedSigninStruct)
 
-	if DecodedSigninStruct.Name != ""{
-		
-		c.JSON(200,gin.H{
-			"Code":"Succeded",
+	if DecodedSigninStruct.Name != "" {
+
+		c.JSON(200, gin.H{
+			"Code": "Succeded",
 			"Json": DecodedSigninStruct,
 		})
-	}else{
-		c.JSON(505,gin.H{
-			"Code":"You_are_not_authorized",
+	} else {
+		c.JSON(505, gin.H{
+			"Code": "You_are_not_authorized",
 		})
 	}
 }
-func SignupDoctor(c *gin.Context){
-	var(
+func SignupDoctor(c *gin.Context) {
+	var (
 		// DecodedSigninStruct structures.Signup
 		SignupDoctor structures.SignupDoctor
-		checkPoint bool
-	  ) 
+		checkPoint   bool
+	)
 	// """""""""get he json request from client """""""""
 	jsonFM := c.Request.FormValue("json")
 	files, handler, errIMG := c.Request.FormFile("img")
@@ -205,34 +207,33 @@ func SignupDoctor(c *gin.Context){
 	// """""""""""""""""""""bind the request data into structure"""""""""""""""""""""
 	json.Unmarshal([]byte(jsonFM), &SignupDoctor)
 
-	
-	log.Printf("str %v\n",SignupDoctor)
-	  log.Printf("Marshel Eror %v\n",SignupDoctor)
-	  valueStruct , err := json.Marshal(SignupDoctor)
-	  if err != nil{
-		  log.Printf("Marshel Eror %v\n",err)
-	  }
-	  // """"""""""""""""""""""""""""""""""DB CONNECTION""""""""""""""""""""""""""""""""""""""""""""""""""""
-	  Authenticationservice()
-	  collection := client.Database("MedCard").Collection("users")
-	  // """"""""""""""""""""""""""""""""""DB CONNECTION""""""""""""""""""""""""""""""""""""""""""""""""""""
-	  checkPointOne,checkPointTwo  := velidation.TestTheStruct(c,"phone:password:email:name:surname:lastname:position",string(valueStruct),"FieldsCheck:true,DBCheck:true","doctor","")
-	  log.Println(checkPoint)
+	log.Printf("str %v\n", SignupDoctor)
+	log.Printf("Marshel Eror %v\n", SignupDoctor)
+	valueStruct, err := json.Marshal(SignupDoctor)
+	if err != nil {
+		log.Printf("Marshel Eror %v\n", err)
+	}
+	// """"""""""""""""""""""""""""""""""DB CONNECTION""""""""""""""""""""""""""""""""""""""""""""""""""""
+	Authenticationservice()
+	collection := client.Database("MedCard").Collection("users")
+	// """"""""""""""""""""""""""""""""""DB CONNECTION""""""""""""""""""""""""""""""""""""""""""""""""""""
+	checkPointOne, checkPointTwo := velidation.TestTheStruct(c, "phone:password:email:name:surname:lastname:position", string(valueStruct), "FieldsCheck:true,DBCheck:true", "doctor", "")
+	log.Println(checkPoint)
 
-	  if checkPointOne != false && checkPointTwo != false{
-		  hashedPass ,err := bycrypt.HashPassword(SignupDoctor.Password)
-		  if err != nil{
-		  log.Printf("Err Hash%v",err)
-		  }
-		  primitiveid := primitive.NewObjectID().Hex()
-		  SignupDoctor.Password = hashedPass
-		  SignupDoctor.Userid = primitiveid
-		  SignupDoctor.Permissions = "doctor"
-		  SignupDoctor.ImgUrl = handlefile.Handlefile(c,"./static/upload")
+	if checkPointOne != false && checkPointTwo != false {
+		hashedPass, err := bycrypt.HashPassword(SignupDoctor.Password)
+		if err != nil {
+			log.Printf("Err Hash%v", err)
+		}
+		primitiveid := primitive.NewObjectID().Hex()
+		SignupDoctor.Password = hashedPass
+		SignupDoctor.Userid = primitiveid
+		SignupDoctor.Permissions = "doctor"
+		SignupDoctor.ImgUrl = handlefile.Handlefile(c, "./static/upload")
 		//   SignupDoctor.History = append(SignupDoctor.History, structures.History{
 		// 	Year: "2022-12",
 		// 	Position: "jfdfdd",
 		//   })
-		  collection.InsertOne(ctx,SignupDoctor)
-	  }
+		collection.InsertOne(ctx, SignupDoctor)
+	}
 }
