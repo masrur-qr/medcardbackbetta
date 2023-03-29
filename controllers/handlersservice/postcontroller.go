@@ -9,6 +9,7 @@ import (
 	"medcard-new/begening/controllers/handlefile"
 	"medcard-new/begening/controllers/jwtgen"
 	"medcard-new/begening/controllers/velidation"
+	"medcard-new/begening/evtvariables"
 	"medcard-new/begening/structures"
 	"os"
 
@@ -42,13 +43,8 @@ var redirect_url string = os.Getenv("URL")
 var DB_Url string = os.Getenv("DBURL")
 
 func Authenticationservice() {
-	if DB_Url == "" {
-		DB_Url = "mongodb://127.0.0.1:27017"
-	}
-	log.Printf("DB URl%v\n", DB_Url)
-	log.Printf("DB URl%v\n", os.Getenv("DBURL"))
-	clientOptions := options.Client().ApplyURI("mongodb://127.0.0.1:27017")
-	// clientOptions := options.Client().ApplyURI(os.Getenv("DBURL"))
+	// clientOptions := options.Client().ApplyURI("mongodb://127.0.0.1:27017")
+	clientOptions := options.Client().ApplyURI(evtvariables.DBUrl)
 	clientG, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		log.Println("Mongo.connect() ERROR: ", err)
@@ -248,11 +244,7 @@ func ProfileChange(c *gin.Context) {
 }
 
 func Cors(c *gin.Context) {
-	if redirect_url == "" {
-		redirect_url = "http://127.0.0.1:5502"
-	}
-	log.Printf("url%v\n", redirect_url)
-	c.Writer.Header().Set("Access-Control-Allow-Origin", "http://127.0.0.1:5173")
+	c.Writer.Header().Set("Access-Control-Allow-Origin", evtvariables.IpUrl)
 	c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 	c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, ResponseType, accept, origin, Cache-Control, X-Requested-With")
 	c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, PUT, DELETE")

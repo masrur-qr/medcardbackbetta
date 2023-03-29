@@ -4,6 +4,7 @@ import (
 	"medcard-new/begening/controllers/authenticationservice"
 	"medcard-new/begening/controllers/ehrcontroller"
 	controllers "medcard-new/begening/controllers/handlersservice"
+	"medcard-new/begening/evtvariables"
 
 	"github.com/gin-gonic/gin"
 )
@@ -39,5 +40,6 @@ func Handlers(){
 	// 	Port = "5500"
 	// }
 	// log.Printf("port%v",Port)
-	r.Run(":5500")
+	evtvariables.New()
+	r.Run(":"+ evtvariables.Port)
 }

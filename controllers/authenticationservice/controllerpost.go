@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"medcard-new/begening/evtvariables"
 	"medcard-new/begening/structures"
 	"net/http"
 	"os"
@@ -29,11 +30,8 @@ var (
 var DB_Url string = os.Getenv("DBURL")
 
 func Authenticationservice() {
-	if DB_Url == "" {
-		DB_Url = "mongodb://127.0.0.1:27017"
-	}
-	clientOptions := options.Client().ApplyURI("mongodb://127.0.0.1:27017")
-	// clientOptions := options.Client().ApplyURI(DB_Url)
+	// clientOptions := options.Client().ApplyURI("mongodb://127.0.0.1:27017")
+	clientOptions := options.Client().ApplyURI(evtvariables.DBUrl)
 	clientG, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		log.Println("Mongo.connect() ERROR: ", err)
@@ -67,10 +65,10 @@ func Signin(c *gin.Context) {
 			Value:    jwtgen.GenerateToken(c, SignupStruct.Phone),
 			Expires:  time.Now().Add(30 * time.Hour),
 			HttpOnly: false,
-			Secure:   false,
+			Secure:   true,
 			Path:     "/",
-			// SameSite: http.SameSiteNoneMode,
-			// MaxAge: 31536000,
+			SameSite: http.SameSiteNoneMode,
+			MaxAge: 0,
 			Domain: "",
 		})
 		c.JSON(200, gin.H{
@@ -147,6 +145,7 @@ func Signout(c *gin.Context) {
 		HttpOnly: false,
 		Secure:   true,
 		SameSite: http.SameSiteNoneMode,
+		MaxAge: 0,
 		Path:     "/",
 	})
 	c.JSON(200, gin.H{
