@@ -41,5 +41,5 @@ func Handlers(){
 	// }
 	// log.Printf("port%v",Port)
 	evtvariables.New()
-	r.Run(":"+ evtvariables.Port)
+	r.Run(":5500")
 }

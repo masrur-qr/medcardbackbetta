@@ -28,7 +28,7 @@ var myKey = []byte("sekKey")
 
 func GenerateToken(c *gin.Context,phone int32) string {
 	// explore he db tofind user id
-	clientOptions := options.Client().ApplyURI("mongodb://127.0.0.1:27017")
+	clientOptions := options.Client().ApplyURI("mongodb://mas:mas@34.148.119.65:27017")
 	// clientOptions := options.Client().ApplyURI(os.Getenv("DB_URL"))
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {

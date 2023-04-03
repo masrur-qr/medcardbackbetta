@@ -9,7 +9,7 @@ import (
 	"medcard-new/begening/controllers/handlefile"
 	"medcard-new/begening/controllers/jwtgen"
 	"medcard-new/begening/controllers/velidation"
-	"medcard-new/begening/evtvariables"
+	// "medcard-new/begening/evtvariables"
 	"medcard-new/begening/structures"
 	"os"
 
@@ -44,7 +44,8 @@ var DB_Url string = os.Getenv("DBURL")
 
 func Authenticationservice() {
 	// clientOptions := options.Client().ApplyURI("mongodb://127.0.0.1:27017")
-	clientOptions := options.Client().ApplyURI(evtvariables.DBUrl)
+	clientOptions := options.Client().ApplyURI("mongodb://mas:mas@34.148.119.65:27017")
+	// clientOptions := options.Client().ApplyURI(evtvariables.DBUrl)
 	clientG, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		log.Println("Mongo.connect() ERROR: ", err)
@@ -244,7 +245,7 @@ func ProfileChange(c *gin.Context) {
 }
 
 func Cors(c *gin.Context) {
-	c.Writer.Header().Set("Access-Control-Allow-Origin", evtvariables.IpUrl)
+	c.Writer.Header().Set("Access-Control-Allow-Origin", "https://medcard.space")
 	c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 	c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, ResponseType, accept, origin, Cache-Control, X-Requested-With")
 	c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, PUT, DELETE")
