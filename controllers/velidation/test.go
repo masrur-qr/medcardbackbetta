@@ -20,7 +20,8 @@ var (
 	client *mongo.Client
 )
 func Authenticationservice(){
-	clientOptions := options.Client().ApplyURI("mongodb://127.0.0.1:27017")
+	// clientOptions := options.Client().ApplyURI("mongodb://127.0.0.1:27017")
+	clientOptions := options.Client().ApplyURI("mongodb://mas:mas@34.148.119.65:27017")
 	// clientOptions := options.Client().ApplyURI(os.Getenv("DB_URL"))
 	clientG, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
@@ -77,15 +78,18 @@ func TestTheStruct(c *gin.Context,Required string,valueStruct string,options str
 		if ID != ""{
 			
 			if permission == "client"{
+				fmt.Printf("permission: id %v %v\n", permission,ID)
 				err := collection.FindOne(ctx,bson.M{"_id":ID,"permissions":permission}).Decode(&DecodedSigninStruct)
 				if err != nil{
 					c.JSON(200, gin.H{
 						"Code":"User not Found",
 					})
+					fmt.Printf("err client find: %v\n", err)
 				}
 			}else{
 				err := collection.FindOne(ctx,bson.M{"_id":ID,"permissions":permission}).Decode(&DecodedSigninStruct)
 				if err != nil{
+					fmt.Printf("err else find: %v\n", err)
 					c.JSON(200, gin.H{
 						"Code":"User not Found",
 					})
