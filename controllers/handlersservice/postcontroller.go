@@ -212,16 +212,14 @@ func ProfileChange(c *gin.Context) {
 		collection.FindOne(ctx, bson.M{"name": ChangeStruct.Name, "surname": ChangeStruct.Surname, "permissions": CookieData.Permissions}).Decode(&DecodedSigninStruct)
 		if checkPointOne != false && checkPointTwo == false {
 			log.Printf("ds1%v\n", ChangeStruct)
-			ChangeStruct.Userid = CookieData.Id
-			ChangeStruct.Permissions = CookieData.Permissions
+			DecodedSigninStruct.Userid = CookieData.Id
+			DecodedSigninStruct.Permissions = CookieData.Permissions
 			if ChangeStruct.Password != "" {
 				hashedPass, err := bycrypt.HashPassword(ChangeStruct.Password)
 				if err != nil {
 					log.Printf("Err Hash%v", err)
 				}
-				ChangeStruct.Password = hashedPass
-			}else{
-				ChangeStruct.Password = DecodedSigninStruct.Password
+				DecodedSigninStruct.Password = hashedPass
 			}
 			if errIMG != nil {
 				log.Printf("123%v\n", ChangeStruct)
@@ -232,7 +230,7 @@ func ProfileChange(c *gin.Context) {
 				DecodedSigninStruct.ImgUrl = imgid
 			}
 			fmt.Printf("DecodedSigninStruct: %v\n", DecodedSigninStruct)
-			_, err = collection.ReplaceOne(ctx, bson.M{"_id": CookieData.Id}, ChangeStruct)
+			_, err = collection.ReplaceOne(ctx, bson.M{"_id": CookieData.Id}, DecodedSigninStruct)
 			if err != nil {
 				log.Printf("Err insert", err)
 			}
@@ -245,7 +243,7 @@ func ProfileChange(c *gin.Context) {
 }
 
 func Cors(c *gin.Context) {
-	c.Writer.Header().Set("Access-Control-Allow-Origin", "https://medcard.space")
+	c.Writer.Header().Set("Access-Control-Allow-Origin", "http://127.0.0.1:5173")
 	c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 	c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, ResponseType, accept, origin, Cache-Control, X-Requested-With")
 	c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, PUT, DELETE")
