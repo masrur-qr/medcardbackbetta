@@ -3,10 +3,12 @@ package ehrcontroller
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"medcard-new/begening/controllers/handlefile"
 	"medcard-new/begening/controllers/jwtgen"
 	"medcard-new/begening/controllers/velidation"
+
 	// "medcard-new/begening/evtvariables"
 	"medcard-new/begening/structures"
 	"os"
@@ -45,6 +47,7 @@ func DoctorClientForView(c *gin.Context){
 	)
 	c.ShouldBindJSON(&ViewStruct)
 	CookieData := jwtgen.Velidation(c)
+	fmt.Printf("ViewStruct: %v\n", ViewStruct)
 
 	stringJSON , err:= json.Marshal(ViewStruct)
 	if err != nil{
@@ -52,19 +55,20 @@ func DoctorClientForView(c *gin.Context){
 	}
 
 	if CookieData.Permissions == "client"{
-		isPassedFields , _ := velidation.TestTheStruct(c,"clientFLSname:clientid:doctorid:sickness:phone",string(stringJSON),"FieldsCheck:true,DBCheck:false","","")
+		isPassedFields , _ := velidation.TestTheStruct(c,"clientFLSname:doctorid:sickness:phone",string(stringJSON),"FieldsCheck:true,DBCheck:false","","")
 
 		// """"""""""""""""""""""""""""""""""DB CONNECTION""""""""""""""""""""""""""""""""""""""""""""""""""""
 		Authenticationservice()
 		collection := client.Database("MedCard").Collection("views")
 		// """"""""""""""""""""""""""""""""""DB CONNECTION""""""""""""""""""""""""""""""""""""""""""""""""""""
-		err := collection.FindOne(ctx,bson.M{"clientid":ViewStruct.ClientId,"doctorid":ViewStruct.DoctorId}).Decode(&ViewStructDecode)
+		err := collection.FindOne(ctx,bson.M{"clientid":CookieData.Id,"doctorid":ViewStruct.DoctorId}).Decode(&ViewStructDecode)
 		if err != nil{
 			log.Printf("Find ERR views%v\n", err)
 		}
 		if isPassedFields == true && ViewStructDecode.Sickness == ""{
 			premetivid := primitive.NewObjectID().Hex()
 			ViewStruct.Id = premetivid
+			ViewStruct.ClientId = CookieData.Id
 			ViewStruct.Date = ""
 			_ , err := collection.InsertOne(ctx,ViewStruct)
 			if err != nil{

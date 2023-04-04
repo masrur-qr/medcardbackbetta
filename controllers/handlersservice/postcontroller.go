@@ -9,7 +9,7 @@ import (
 	"medcard-new/begening/controllers/handlefile"
 	"medcard-new/begening/controllers/jwtgen"
 	"medcard-new/begening/controllers/velidation"
-	"medcard-new/begening/evtvariables"
+	// "medcard-new/begening/evtvariables"
 	"medcard-new/begening/structures"
 	"os"
 
@@ -120,13 +120,13 @@ func ProfileChange(c *gin.Context) {
 	Authenticationservice()
 	collection := client.Database("MedCard").Collection("users")
 	// collection.FindOne(ctx,)
-	collection.FindOne(ctx, bson.M{"name": ChangeStruct.Name, "surname": ChangeStruct.Surname, "permissions": CookieData.Permissions}).Decode(&DecodedSigninStruct)
 
 	if CookieData.Permissions == "admin" {
 		var ChangeStruct structures.Admin
 		json.Unmarshal([]byte(jsonFM), &ChangeStruct)
 		checkPointOne, checkPointTwo := velidation.TestTheStruct(c, "phone:email:name:surname:lastname", string(valueStruct), "FieldsCheck:true,DBCheck:true", "admin", CookieData.Id)
 		log.Println(CheckpointPassed)
+		collection.FindOne(ctx, bson.M{"name": ChangeStruct.Name, "surname": ChangeStruct.Surname, "permissions": CookieData.Permissions}).Decode(&DecodedSigninStruct)
 		if checkPointOne != false && checkPointTwo == false {
 			log.Printf("ds1%v\n", ChangeStruct)
 			ChangeStruct.Userid = CookieData.Id
@@ -166,6 +166,8 @@ func ProfileChange(c *gin.Context) {
 		// log.Printf("ds3%v\n", ChangeStructHistory)
 		checkPointOne, checkPointTwo := velidation.TestTheStruct(c, "phone:name:surname:lastname:position:adress:biography:email", string(valueStruct), "FieldsCheck:true,DBCheck:true", "doctor", CookieData.Id)
 		log.Println(CheckpointPassed)
+		collection.FindOne(ctx, bson.M{"name": ChangeStruct.Name, "surname": ChangeStruct.Surname, "permissions": CookieData.Permissions}).Decode(&DecodedSigninStruct)
+
 		if checkPointOne != false && checkPointTwo == false {
 			log.Printf("ds1%v\n", ChangeStruct)
 			// log.Printf("ds2%v\n", ChangeStructHistory)
@@ -214,6 +216,8 @@ func ProfileChange(c *gin.Context) {
 			log.Printf("ds1%v\n", ChangeStruct)
 			DecodedSigninStruct.Userid = CookieData.Id
 			DecodedSigninStruct.Permissions = CookieData.Permissions
+			DecodedSigninStruct.Email = ChangeStruct.Email
+			DecodedSigninStruct.Phone = ChangeStruct.Phone
 			if ChangeStruct.Password != "" {
 				hashedPass, err := bycrypt.HashPassword(ChangeStruct.Password)
 				if err != nil {
@@ -243,7 +247,7 @@ func ProfileChange(c *gin.Context) {
 }
 
 func Cors(c *gin.Context) {
-	c.Writer.Header().Set("Access-Control-Allow-Origin", evtvariables.IpUrl)
+	c.Writer.Header().Set("Access-Control-Allow-Origin", "http://127.0.0.1:5173")
 	c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 	c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, ResponseType, accept, origin, Cache-Control, X-Requested-With")
 	c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, PUT, DELETE")

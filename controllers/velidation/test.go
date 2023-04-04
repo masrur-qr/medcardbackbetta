@@ -58,7 +58,7 @@ func TestTheStruct(c *gin.Context,Required string,valueStruct string,options str
 		if countFields == len(splitTheRequired){
 			IsPassedFields = true
 		}else{
-			c.JSON(400,gin.H{
+			c.JSON(202 ,gin.H{
 				"Code":"Error there is empty field || fields",
 			})
 		}
@@ -81,7 +81,7 @@ func TestTheStruct(c *gin.Context,Required string,valueStruct string,options str
 				fmt.Printf("permission: id %v %v\n", permission,ID)
 				err := collection.FindOne(ctx,bson.M{"_id":ID,"permissions":permission}).Decode(&DecodedSigninStruct)
 				if err != nil{
-					c.JSON(200, gin.H{
+					c.JSON(202 , gin.H{
 						"Code":"User not Found",
 					})
 					fmt.Printf("err client find: %v\n", err)
@@ -90,7 +90,7 @@ func TestTheStruct(c *gin.Context,Required string,valueStruct string,options str
 				err := collection.FindOne(ctx,bson.M{"_id":ID,"permissions":permission}).Decode(&DecodedSigninStruct)
 				if err != nil{
 					fmt.Printf("err else find: %v\n", err)
-					c.JSON(200, gin.H{
+					c.JSON(202 , gin.H{
 						"Code":"User not Found",
 					})
 				}
@@ -101,14 +101,14 @@ func TestTheStruct(c *gin.Context,Required string,valueStruct string,options str
 			if permission == "client"{
 				err := collection.FindOne(ctx,bson.M{"_id":ID,"permissions":permission}).Decode(&DecodedSigninStruct)
 				if err != nil{
-					c.JSON(200, gin.H{
+					c.JSON(202 , gin.H{
 						"Code":"User not Found",
 					})
 				}
 			}else{
 				err := collection.FindOne(ctx,bson.M{"name":SigninStruct.Name,"surname":SigninStruct.Surname,"permissions":permission}).Decode(&DecodedSigninStruct)
 				if err != nil{
-					c.JSON(200, gin.H{
+					c.JSON(202 , gin.H{
 						"Code":"User not Found",
 					})
 				}
@@ -121,12 +121,12 @@ func TestTheStruct(c *gin.Context,Required string,valueStruct string,options str
 			if DecodedSigninStruct.Name == ""{
 				IsPassedDB = true
 			}else{
-				c.JSON(400,gin.H{
+				c.JSON(202 ,gin.H{
 					"Code":"Error this phone numbers are already taken",
 				})
 			}
 		}else{
-			c.JSON(400,gin.H{
+			c.JSON( 202  ,gin.H{
 				"Code":"Error User already exist",
 			})
 		}
