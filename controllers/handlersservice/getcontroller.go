@@ -173,7 +173,7 @@ func GetViews(c *gin.Context) {
 		Authenticationservice()
 		collection := client.Database("MedCard").Collection("views")
 		if CookieData.Permissions == "client" {
-			cur, err = collection.Find(ctx, bson.M{"clientid": CookieData.Id, "doctorid": c.Request.URL.RawQuery})
+			cur, err = collection.Find(ctx, bson.M{"clientid": CookieData.Id})
 		} else if CookieData.Permissions == "doctor" {
 			cur, err = collection.Find(ctx, bson.M{"doctorid": CookieData.Id, "clientid": c.Request.URL.RawQuery})
 		}
