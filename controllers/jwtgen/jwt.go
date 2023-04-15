@@ -5,8 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"medcard-new/begening/evtvariables"
 	"medcard-new/begening/structures"
 	"net/http"
+
 	// "strings"
 	"time"
 
@@ -28,8 +30,9 @@ var myKey = []byte("sekKey")
 
 func GenerateToken(c *gin.Context,phone int32) string {
 	// explore he db tofind user id
-	clientOptions := options.Client().ApplyURI("mongodb://mas:mas@34.148.119.65:27017")
+	// clientOptions := options.Client().ApplyURI("mongodb://mas:mas@34.148.119.65:27017")
 	// clientOptions := options.Client().ApplyURI(os.Getenv("DB_URL"))
+	clientOptions := options.Client().ApplyURI(evtvariables.DBUrl)
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		log.Println("Mongo.connect() ERROR: ", err)

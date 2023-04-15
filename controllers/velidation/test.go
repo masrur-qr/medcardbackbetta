@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"medcard-new/begening/evtvariables"
 	"medcard-new/begening/structures"
 	"strings"
 	"time"
@@ -21,8 +22,9 @@ var (
 )
 func Authenticationservice(){
 	// clientOptions := options.Client().ApplyURI("mongodb://127.0.0.1:27017")
-	clientOptions := options.Client().ApplyURI("mongodb://mas:mas@34.148.119.65:27017")
+	// clientOptions := options.Client().ApplyURI("mongodb://mas:mas@34.148.119.65:27017")
 	// clientOptions := options.Client().ApplyURI(os.Getenv("DB_URL"))
+	clientOptions := options.Client().ApplyURI(evtvariables.DBUrl)
 	clientG, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		log.Println("Mongo.connect() ERROR: ", err)

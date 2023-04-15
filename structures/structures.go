@@ -32,24 +32,24 @@ type Signup struct {
 	Permissions  string `json:"permissions"`
 }
 type SignupDoctor struct {
-	Userid      string    `bson:"_id"`
-	Phone       int32     `json:"phone"`
-	Password    string    `json:"password"`
-	Email       string    `json:"email"`
-	Name        string    `json:"name"`
-	Surname     string    `json:"surname"`
-	Lastname    string    `json:"lastname"`
-	Position    string    `json:"position"`
-	Experience    string    `json:"experience"`
-	Biography   string    `json:"biography"`
-	Adress      string    `json:"adress"`
-	Permissions string    `json:"permissions"`
-	ImgUrl      string    `json:"imgurl"`
-	History     []History 
+	Userid      string `bson:"_id"`
+	Phone       int32  `json:"phone"`
+	Password    string `json:"password"`
+	Email       string `json:"email"`
+	Name        string `json:"name"`
+	Surname     string `json:"surname"`
+	Lastname    string `json:"lastname"`
+	Position    string `json:"position"`
+	Experience  string `json:"experience"`
+	Biography   string `json:"biography"`
+	Adress      string `json:"adress"`
+	Permissions string `json:"permissions"`
+	ImgUrl      string `json:"imgurl"`
+	History     []History
 }
 type History struct {
-	Year     string `json:"year"`
-	Position string `json:"position"`
+	Year        string `json:"year"`
+	Position    string `json:"position"`
 	Description string `json:"description"`
 }
 type Admin struct {
@@ -106,4 +106,9 @@ type GlobeStruct struct {
 	Biography string `json:"biography"`
 	ImgUrl    string `json:"imgurl"`
 	// History []History
+}
+type IpDB struct {
+	Id  string `bson:"ip"`
+	Ip   string `json:"ip"`
+	Data string `json:"data"`
 }

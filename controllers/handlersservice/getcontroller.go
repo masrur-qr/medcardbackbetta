@@ -4,7 +4,6 @@ import (
 	"log"
 	"medcard-new/begening/controllers/jwtgen"
 	"medcard-new/begening/structures"
-
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -17,7 +16,7 @@ func GetQuestions(c *gin.Context) {
 	Authenticationservice()
 	collection := client.Database("MedCard").Collection("questions")
 	cur, err := collection.Find(ctx, bson.M{})
-
+	
 	if err != nil {
 		log.Printf("Err find Question%v\n", err)
 	}
