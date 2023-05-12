@@ -118,7 +118,7 @@ func GetAccessDetails(tokenStr string) ([]byte) {
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if ok && token.Valid{
 		fmt.Println(claims)
-		ClaimsTok, err := json.Marshal(claims)
+		ClaimsTok, err := json.Marshal(token.Claims.(jwt.MapClaims))
 		if err != nil {
 			fmt.Printf("Error: %s", err.Error())
 		}
