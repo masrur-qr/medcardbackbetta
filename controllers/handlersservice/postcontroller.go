@@ -50,7 +50,7 @@ func Authenticationservice() {
 	if err != nil {
 		log.Println("Mongo.connect() ERROR: ", err)
 	}
-	ctxG, _ := context.WithTimeout(context.Background(), 15*time.Minute)
+	ctxG, _ := context.WithTimeout(context.Background(), 1*time.Minute)
 	// collection := client.Database("MedCard").Collection("users")
 	ctx = ctxG
 	client = clientG
@@ -61,7 +61,6 @@ func InsertQuestions(c *gin.Context) {
 		QuestionsDb GlobeStruct
 	)
 	c.ShouldBindJSON(&Questions)
-	log.Printf("qjson: %v\n", Questions)
 	// """"""""""""""""""""""JWT VALIDATION""""""""""""""""""""""""""
 	ClaimsData := jwtgen.Velidation(c)
 	log.Println(ClaimsData)
@@ -75,8 +74,9 @@ func InsertQuestions(c *gin.Context) {
 		log.Printf("Marshel Error: %v\n", err)
 	}
 
-	checkPointOne, checkPointTwo := velidation.TestTheStruct(c, "questiontitle:questiontext:questionauthorname", string(valueStruct), "FieldsCheck:true,DBCheck:false", "", "")
-	if checkPointOne != false && checkPointTwo != true {
+	// checkPointOne, checkPointTwo := velidation.TestTheStruct(c, "questiontitle:questiontext:questionauthorname", string(valueStruct), "FieldsCheck:true,DBCheck:false", "", "")
+	Exist, Empty := velidation.TestTheQuestion(string(valueStruct))
+	if Exist  && !Empty  {
 		var primitiveId = primitive.NewObjectID().Hex()
 		Questions.QuestionId = primitiveId
 

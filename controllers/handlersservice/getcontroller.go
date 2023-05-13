@@ -1,12 +1,12 @@
 package controllers
 
 import (
-	"log"
-	"medcard-new/begening/controllers/jwtgen"
-	"medcard-new/begening/structures"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"log"
+	"medcard-new/begening/controllers/jwtgen"
+	"medcard-new/begening/structures"
 )
 
 func GetQuestions(c *gin.Context) {
@@ -16,7 +16,7 @@ func GetQuestions(c *gin.Context) {
 	Authenticationservice()
 	collection := client.Database("MedCard").Collection("questions")
 	cur, err := collection.Find(ctx, bson.M{})
-	
+
 	if err != nil {
 		log.Printf("Err find Question%v\n", err)
 	}
@@ -36,19 +36,19 @@ func GetQuestions(c *gin.Context) {
 }
 func GetDoctors(c *gin.Context) {
 	var (
-	DoctorDb structures.SignupDoctor
+		DoctorDb structures.SignupDoctor
 	)
 	Authenticationservice()
 	collection := client.Database("MedCard").Collection("users")
-	cur, err := collection.Find(ctx, bson.M{"permissions":"doctor"})
+	cur, err := collection.Find(ctx, bson.M{"permissions": "doctor"})
 
-	if err != nil{
-		log.Printf("Err find Question%v\n",err)
+	if err != nil {
+		log.Printf("Err find Question%v\n", err)
 	}
 	defer cur.Close(ctx)
 
 	var DoctorDbArr []structures.SignupDoctor
-	for cur.Next(ctx){
+	for cur.Next(ctx) {
 		cur.Decode(&DoctorDb)
 		DoctorDbArr = append(DoctorDbArr, DoctorDb)
 		log.Println(DoctorDbArr)
@@ -61,7 +61,8 @@ func GetDoctors(c *gin.Context) {
 }
 func Statistics(c *gin.Context) {
 	var (
-		Statistics structures.GlobeStruct
+		Statistics      structures.GlobeStruct
+		StatisticsUsers structures.Signup
 	)
 	// ==================== Cookie validation =========================
 	CookieData := jwtgen.Velidation(c)
@@ -84,7 +85,7 @@ func Statistics(c *gin.Context) {
 			log.Println(StatisticsArr)
 		}
 		// ==================== List all doctors =========================
-		curDoc, err := collection.Find(ctx, bson.M{"permissions":"doctor"})
+		curDoc, err := collection.Find(ctx, bson.M{"permissions": "doctor"})
 
 		if err != nil {
 			log.Printf("Err find Question%v\n", err)
@@ -98,7 +99,7 @@ func Statistics(c *gin.Context) {
 			log.Println(StatisticsArrDoc)
 		}
 		// ==================== List all doctors =========================
-		curCl, err := collection.Find(ctx, bson.M{"permissions":"client"})
+		curCl, err := collection.Find(ctx, bson.M{"permissions": "client"})
 
 		if err != nil {
 			log.Printf("Err find Question%v\n", err)
@@ -111,13 +112,103 @@ func Statistics(c *gin.Context) {
 			StatisticsArrCl = append(StatisticsArrCl, Statistics)
 			log.Println(StatisticsArrCl)
 		}
-
+		// ======================================= Filter Users By Blood =====================================
+		// ? Blood 1
+		var StatisticUserArrOne []structures.Signup
+		cur, _ = collection.Find(ctx, bson.M{"blood": "1"})
+		defer cur.Close(ctx)
+		for cur.Next(ctx) {
+			cur.Decode(&StatisticsUsers)
+			StatisticUserArrOne = append(StatisticUserArrOne, StatisticsUsers)
+		}
+		// ? Blood 2
+		var StatisticUserArrTwo []structures.Signup
+		cur, _ = collection.Find(ctx, bson.M{"blood": "2"})
+		defer cur.Close(ctx)
+		for cur.Next(ctx) {
+			cur.Decode(&StatisticsUsers)
+			StatisticUserArrTwo = append(StatisticUserArrTwo, StatisticsUsers)
+		}
+		// ? Blood 3
+		var StatisticUserArrThree []structures.Signup
+		cur,_ = collection.Find(ctx, bson.M{"blood":"3"})
+		defer cur.Close(ctx)
+		for cur.Next(ctx){
+			cur.Decode(&StatisticsUsers)
+			StatisticUserArrThree = append(StatisticUserArrThree, StatisticsUsers)
+		}
+		// ? Blood 4
+		var StatisticUserArrFour []structures.Signup
+		cur,_ = collection.Find(ctx, bson.M{"blood":"4"})
+		defer cur.Close(ctx)
+		for cur.Next(ctx){
+			cur.Decode(&StatisticsUsers)
+			StatisticUserArrFour = append(StatisticUserArrFour, StatisticsUsers)
+		}
+		// ======================================= Filter Users By Gender =====================================
+		var StatisticUserArrGenderMale []structures.Signup
+		cur,_ = collection.Find(ctx, bson.M{"gender":"male"})
+		defer cur.Close(ctx)
+		for cur.Next(ctx){
+			cur.Decode(&StatisticsUsers)
+			StatisticUserArrGenderMale = append(StatisticUserArrGenderMale, StatisticsUsers)
+		}
+		var StatisticUserArrGenderFemale []structures.Signup
+		cur,_ = collection.Find(ctx, bson.M{"gender":"female"})
+		defer cur.Close(ctx)
+		for cur.Next(ctx){
+			cur.Decode(&StatisticsUsers)
+			StatisticUserArrGenderFemale = append(StatisticUserArrGenderFemale, StatisticsUsers)
+		}
+		// ======================================= Disabilaties =====================================
+		// ? Disabliaties 1
+		var StatisticUserArrAbilatiesOne []structures.Signup
+		cur, _ = collection.Find(ctx, bson.M{"blood": "1"})
+		defer cur.Close(ctx)
+		for cur.Next(ctx) {
+			cur.Decode(&StatisticsUsers)
+			StatisticUserArrAbilatiesOne = append(StatisticUserArrAbilatiesOne, StatisticsUsers)
+		}
+		// ? Disabliaties 2
+		var StatisticUserArrAbilatiesTwo []structures.Signup
+		cur, _ = collection.Find(ctx, bson.M{"blood": "2"})
+		defer cur.Close(ctx)
+		for cur.Next(ctx) {
+			cur.Decode(&StatisticsUsers)
+			StatisticUserArrAbilatiesTwo = append(StatisticUserArrAbilatiesTwo, StatisticsUsers)
+		}
+		// ? Disabliaties 3
+		var StatisticUserArrAbilatiesThree []structures.Signup
+		cur,_ = collection.Find(ctx, bson.M{"blood":"3"})
+		defer cur.Close(ctx)
+		for cur.Next(ctx){
+			cur.Decode(&StatisticsUsers)
+			StatisticUserArrAbilatiesThree = append(StatisticUserArrAbilatiesThree, StatisticsUsers)
+		}
+		// ? Disabliaties 4
+		var StatisticUserArrAbilatiesFour []structures.Signup
+		cur,_ = collection.Find(ctx, bson.M{"blood":"4"})
+		defer cur.Close(ctx)
+		for cur.Next(ctx){
+			cur.Decode(&StatisticsUsers)
+			StatisticUserArrAbilatiesFour = append(StatisticUserArrAbilatiesFour, StatisticsUsers)
+		}
 		// ======================================= All Users =====================================
 		c.JSON(200, gin.H{
-			"Code":  "Request Handeled",
-			"Users": len(StatisticsArr) - 1,
+			"Code":    "Request Handeled",
+			"Users":   len(StatisticsArr) - 1,
 			"Doctors": len(StatisticsArrDoc),
 			"Clients": len(StatisticsArrCl),
+			"Blood-1": len(StatisticUserArrOne),
+			"Blood-2": len(StatisticUserArrTwo),
+			"Blood-3": len(StatisticUserArrThree),
+			"Blood-4": len(StatisticUserArrFour),
+			"Gender-Male": len(StatisticUserArrGenderMale),
+			"Gender-Female": len(StatisticUserArrGenderFemale),
+			"Disabliaties-1": len(StatisticUserArrAbilatiesOne),
+			"Disabliaties-2":len(StatisticUserArrAbilatiesTwo),
+			"Disabliaties-3":len(StatisticUserArrAbilatiesThree),
+			"Disabliaties-None":len(StatisticUserArrAbilatiesFour),
 		})
 	} else {
 		c.JSON(400, gin.H{
@@ -202,7 +293,7 @@ func GetViews(c *gin.Context) {
 func GetClient(c *gin.Context) {
 	var (
 		ClientsDB structures.Signup
-		DoctorDB structures.SignupDoctor
+		DoctorDB  structures.SignupDoctor
 		Files     structures.File
 	)
 	// ==================== Cookie validation =========================
@@ -210,7 +301,7 @@ func GetClient(c *gin.Context) {
 
 	log.Println(CookieData.Permissions)
 
-	if CookieData.Permissions == "client"{
+	if CookieData.Permissions == "client" {
 		Authenticationservice()
 		collection := client.Database("MedCard").Collection("users")
 		err := collection.FindOne(ctx, bson.M{"_id": c.Request.URL.RawQuery}).Decode(&ClientsDB)
@@ -242,7 +333,7 @@ func GetClient(c *gin.Context) {
 				"Code": "User NotFound",
 			})
 		}
-	}else {
+	} else {
 		// ? ========================================== get Client data ============================
 		Authenticationservice()
 		collectionCli := client.Database("MedCard").Collection("users")
@@ -267,17 +358,17 @@ func GetClient(c *gin.Context) {
 		collection := client.Database("MedCard").Collection("users")
 		err = collection.FindOne(ctx, bson.M{"_id": CookieData.Id}).Decode(&DoctorDB)
 
-		if err != nil{
+		if err != nil {
 			log.Printf("Err find user %v\n", err)
 		}
 		if DoctorDB.Name != "" {
 			log.Println(c.Request.URL.RawQuery)
 			DoctorDB.Password = "null"
 			c.JSON(200, gin.H{
-				"Code":  "Request Handeled",
-				"UserJson":  ClientsDB,
-				"Files": ViewsArr,
-				"Json":  DoctorDB,
+				"Code":     "Request Handeled",
+				"UserJson": ClientsDB,
+				"Files":    ViewsArr,
+				"Json":     DoctorDB,
 			})
 		} else {
 			c.JSON(400, gin.H{
