@@ -1,12 +1,14 @@
 package controllers
 
 import (
-	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
+	"fmt"
 	"log"
 	"medcard-new/begening/controllers/jwtgen"
 	"medcard-new/begening/structures"
+
+	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func GetQuestions(c *gin.Context) {
@@ -131,32 +133,32 @@ func Statistics(c *gin.Context) {
 		}
 		// ? Blood 3
 		var StatisticUserArrThree []structures.Signup
-		cur,_ = collection.Find(ctx, bson.M{"blood":"3"})
+		cur, _ = collection.Find(ctx, bson.M{"blood": "3"})
 		defer cur.Close(ctx)
-		for cur.Next(ctx){
+		for cur.Next(ctx) {
 			cur.Decode(&StatisticsUsers)
 			StatisticUserArrThree = append(StatisticUserArrThree, StatisticsUsers)
 		}
 		// ? Blood 4
 		var StatisticUserArrFour []structures.Signup
-		cur,_ = collection.Find(ctx, bson.M{"blood":"4"})
+		cur, _ = collection.Find(ctx, bson.M{"blood": "4"})
 		defer cur.Close(ctx)
-		for cur.Next(ctx){
+		for cur.Next(ctx) {
 			cur.Decode(&StatisticsUsers)
 			StatisticUserArrFour = append(StatisticUserArrFour, StatisticsUsers)
 		}
 		// ======================================= Filter Users By Gender =====================================
 		var StatisticUserArrGenderMale []structures.Signup
-		cur,_ = collection.Find(ctx, bson.M{"gender":"male"})
+		cur, _ = collection.Find(ctx, bson.M{"gender": "male"})
 		defer cur.Close(ctx)
-		for cur.Next(ctx){
+		for cur.Next(ctx) {
 			cur.Decode(&StatisticsUsers)
 			StatisticUserArrGenderMale = append(StatisticUserArrGenderMale, StatisticsUsers)
 		}
 		var StatisticUserArrGenderFemale []structures.Signup
-		cur,_ = collection.Find(ctx, bson.M{"gender":"female"})
+		cur, _ = collection.Find(ctx, bson.M{"gender": "female"})
 		defer cur.Close(ctx)
-		for cur.Next(ctx){
+		for cur.Next(ctx) {
 			cur.Decode(&StatisticsUsers)
 			StatisticUserArrGenderFemale = append(StatisticUserArrGenderFemale, StatisticsUsers)
 		}
@@ -179,36 +181,36 @@ func Statistics(c *gin.Context) {
 		}
 		// ? Disabliaties 3
 		var StatisticUserArrAbilatiesThree []structures.Signup
-		cur,_ = collection.Find(ctx, bson.M{"blood":"3"})
+		cur, _ = collection.Find(ctx, bson.M{"blood": "3"})
 		defer cur.Close(ctx)
-		for cur.Next(ctx){
+		for cur.Next(ctx) {
 			cur.Decode(&StatisticsUsers)
 			StatisticUserArrAbilatiesThree = append(StatisticUserArrAbilatiesThree, StatisticsUsers)
 		}
 		// ? Disabliaties 4
 		var StatisticUserArrAbilatiesFour []structures.Signup
-		cur,_ = collection.Find(ctx, bson.M{"blood":"4"})
+		cur, _ = collection.Find(ctx, bson.M{"blood": "4"})
 		defer cur.Close(ctx)
-		for cur.Next(ctx){
+		for cur.Next(ctx) {
 			cur.Decode(&StatisticsUsers)
 			StatisticUserArrAbilatiesFour = append(StatisticUserArrAbilatiesFour, StatisticsUsers)
 		}
 		// ======================================= All Users =====================================
 		c.JSON(200, gin.H{
-			"Code":    "Request Handeled",
-			"Users":   len(StatisticsArr) - 1,
-			"Doctors": len(StatisticsArrDoc),
-			"Clients": len(StatisticsArrCl),
-			"Blood-1": len(StatisticUserArrOne),
-			"Blood-2": len(StatisticUserArrTwo),
-			"Blood-3": len(StatisticUserArrThree),
-			"Blood-4": len(StatisticUserArrFour),
-			"Gender-Male": len(StatisticUserArrGenderMale),
-			"Gender-Female": len(StatisticUserArrGenderFemale),
-			"Disabliaties-1": len(StatisticUserArrAbilatiesOne),
-			"Disabliaties-2":len(StatisticUserArrAbilatiesTwo),
-			"Disabliaties-3":len(StatisticUserArrAbilatiesThree),
-			"Disabliaties-None":len(StatisticUserArrAbilatiesFour),
+			"Code":              "Request Handeled",
+			"Users":             len(StatisticsArr) - 1,
+			"Doctors":           len(StatisticsArrDoc),
+			"Clients":           len(StatisticsArrCl),
+			"Blood-1":           len(StatisticUserArrOne),
+			"Blood-2":           len(StatisticUserArrTwo),
+			"Blood-3":           len(StatisticUserArrThree),
+			"Blood-4":           len(StatisticUserArrFour),
+			"Gender-Male":       len(StatisticUserArrGenderMale),
+			"Gender-Female":     len(StatisticUserArrGenderFemale),
+			"Disabliaties-1":    len(StatisticUserArrAbilatiesOne),
+			"Disabliaties-2":    len(StatisticUserArrAbilatiesTwo),
+			"Disabliaties-3":    len(StatisticUserArrAbilatiesThree),
+			"Disabliaties-None": len(StatisticUserArrAbilatiesFour),
 		})
 	} else {
 		c.JSON(400, gin.H{
@@ -283,6 +285,35 @@ func GetViews(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"Code": "Request Handeled",
 			"Json": EHRFileDBArr,
+		})
+	} else {
+		c.JSON(400, gin.H{
+			"Code": "No Permissions",
+		})
+	}
+}
+func ListViewsAdmin(c *gin.Context) {
+	CookieData := jwtgen.Velidation(c)
+
+	if CookieData.Permissions == "Admin" {
+		var (
+			DecodeViews    structures.Views
+			DecodeViewsArr []structures.Views
+		)
+		Authenticationservice()
+		client := client.Database("MredCard").Collection("views")
+		cur, err := client.Find(ctx, bson.M{})
+		if err != nil {
+			fmt.Printf("Error No user found%v", err)
+		}
+		defer cur.Close(ctx)
+
+		for cur.Next(ctx) {
+			cur.Decode(&DecodeViews)
+			DecodeViewsArr = append(DecodeViewsArr, DecodeViews)
+		}
+		c.JSON(200, gin.H{
+			"Views": DecodeViewsArr,
 		})
 	} else {
 		c.JSON(400, gin.H{
