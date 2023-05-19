@@ -20,7 +20,7 @@ import (
 )
 
 type ClaimsTok struct {
-	Phone int32 `json:"phone"`
+	Phone string `json:"phone"`
 	Id string `json:"id"`
 	Permissions string `json:"permissions"`
 	jwt.StandardClaims
@@ -28,7 +28,7 @@ type ClaimsTok struct {
 
 var myKey = []byte("sekKey")
 
-func GenerateToken(c *gin.Context,phone int32) string {
+func GenerateToken(c *gin.Context,phone string) string {
 	// explore he db tofind user id
 	// clientOptions := options.Client().ApplyURI("mongodb://mas:mas@34.148.119.65:27017")
 	// clientOptions := options.Client().ApplyURI(os.Getenv("DB_URL"))
@@ -42,6 +42,7 @@ func GenerateToken(c *gin.Context,phone int32) string {
 	collection := client.Database("MedCard").Collection("users")
 	var DbgetUser structures.Signup
 	collection.FindOne(ctx, bson.M{"phone": phone}).Decode(&DbgetUser)
+	fmt.Printf("DbgetUser: %v\n", DbgetUser)
 	// Declare the expiration time of the token
 	// here, we have kept it as 5 minutes
 	expirationTime := time.Now().Add(30 * time.Hour)

@@ -3,6 +3,7 @@ package authenticationservice
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"medcard-new/begening/evtvariables"
 	"medcard-new/begening/structures"
@@ -59,6 +60,7 @@ func Signin(c *gin.Context) {
 	var DecodedSigninStruct structures.Signin
 	checkPointOne, checkPointTwo := velidation.TestTheStruct(c, "phone:password", string(valueStruct), "FieldsCheck:true,DBCheck:false", "", "")
 	collection.FindOne(ctx, bson.M{"phone": SignupStruct.Phone}).Decode(&DecodedSigninStruct)
+	fmt.Printf("DecodedSigninStruct: %v\n", DecodedSigninStruct)
 	passwordCHeck := bycrypt.CompareHashPasswords(DecodedSigninStruct.Password, SignupStruct.Password)
 	if checkPointOne != false && checkPointTwo != true && DecodedSigninStruct.Password != "" && passwordCHeck != false {
 		http.SetCookie(c.Writer, &http.Cookie{
@@ -80,7 +82,7 @@ func Signin(c *gin.Context) {
 		collection.FindOne(ctx, bson.M{})
 	} else {
 		c.JSON(400, gin.H{
-			"Code": "Aannot_Authorised",
+			"Code": "Cannot_Authorised",
 		})
 	}
 }

@@ -11,7 +11,7 @@ type Questions struct {
 type Signin struct {
 	Userid      string `bson:"_id"`
 	Permissions string `json:"permissions"`
-	Phone       int32  `json:"phone"`
+	Phone       string  `json:"phone"`
 	Password    string `json:"password"`
 }
 type Signup struct {
@@ -33,7 +33,7 @@ type Signup struct {
 }
 type SignupDoctor struct {
 	Userid      string `bson:"_id"`
-	Phone       int32  `json:"phone"`
+	Phone       string  `json:"phone"`
 	Password    string `json:"password"`
 	Email       string `json:"email"`
 	Name        string `json:"name"`
@@ -54,7 +54,7 @@ type History struct {
 }
 type Admin struct {
 	Userid      string `bson:"_id"`
-	Phone       int32  `json:"phone"`
+	Phone       string  `json:"phone"`
 	Password    string `json:"password"`
 	Email       string `json:"email"`
 	Name        string `json:"name"`
@@ -70,7 +70,7 @@ type Views struct {
 	DoctorId      string `json:"doctorid"`
 	Sickness      string `json:"sickness"`
 	Date          string `json:"date"`
-	Phone         int32  `json:"phone"`
+	Phone         string  `json:"phone"`
 }
 type File struct {
 	Id            string `json:"id" bson:"_id"`
@@ -89,7 +89,7 @@ type GlobeStruct struct {
 	QuestionsAuthorName string `json:"questionauthorname"`
 	// ----------------------------------------------------
 	Userid       string `bson:"_id"`
-	Phone        int32  `json:"phone"`
+	Phone        string  `json:"phone"`
 	Password     string `json:"password"`
 	Email        string `json:"email"`
 	Name         string `json:"name"`

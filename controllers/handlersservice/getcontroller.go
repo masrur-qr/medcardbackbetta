@@ -28,7 +28,7 @@ func GetQuestions(c *gin.Context) {
 	for cur.Next(ctx) {
 		cur.Decode(&QuestionsDb)
 		QuestionsDbArr = append(QuestionsDbArr, QuestionsDb)
-		log.Println(QuestionsDbArr)
+		// log.Println(QuestionsDbArr)
 	}
 
 	c.JSON(200, gin.H{
@@ -53,7 +53,7 @@ func GetDoctors(c *gin.Context) {
 	for cur.Next(ctx) {
 		cur.Decode(&DoctorDb)
 		DoctorDbArr = append(DoctorDbArr, DoctorDb)
-		log.Println(DoctorDbArr)
+		// log.Println(DoctorDbArr)
 	}
 
 	c.JSON(200, gin.H{
@@ -84,7 +84,7 @@ func Statistics(c *gin.Context) {
 		for cur.Next(ctx) {
 			cur.Decode(&Statistics)
 			StatisticsArr = append(StatisticsArr, Statistics)
-			log.Println(StatisticsArr)
+			// log.Println(StatisticsArr)
 		}
 		// ==================== List all doctors =========================
 		curDoc, err := collection.Find(ctx, bson.M{"permissions": "doctor"})
@@ -98,7 +98,7 @@ func Statistics(c *gin.Context) {
 		for curDoc.Next(ctx) {
 			curDoc.Decode(&Statistics)
 			StatisticsArrDoc = append(StatisticsArrDoc, Statistics)
-			log.Println(StatisticsArrDoc)
+			// log.Println(StatisticsArrDoc)
 		}
 		// ==================== List all doctors =========================
 		curCl, err := collection.Find(ctx, bson.M{"permissions": "client"})
@@ -112,7 +112,7 @@ func Statistics(c *gin.Context) {
 		for curCl.Next(ctx) {
 			curCl.Decode(&Statistics)
 			StatisticsArrCl = append(StatisticsArrCl, Statistics)
-			log.Println(StatisticsArrCl)
+			// log.Println(StatisticsArrCl)
 		}
 		// ======================================= Filter Users By Blood =====================================
 		// ? Blood 1
@@ -239,7 +239,7 @@ func GetClients(c *gin.Context) {
 		for cur.Next(ctx) {
 			cur.Decode(&ClientsDB)
 			ClientsDBArr = append(ClientsDBArr, ClientsDB)
-			log.Println(ClientsDBArr)
+			// log.Println(ClientsDBArr)
 		}
 
 		c.JSON(200, gin.H{
