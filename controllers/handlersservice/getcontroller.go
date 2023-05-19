@@ -33,7 +33,7 @@ func GetQuestions(c *gin.Context) {
 	if len(QuestionsDbArr) == 0 {
 		c.JSON(200, gin.H{
 			"Code": "Request Handeled",
-			"Json": [1]string{},
+			"Json": []string{},
 		})
 	}else{	
 		c.JSON(200, gin.H{
@@ -65,7 +65,7 @@ func GetDoctors(c *gin.Context) {
 	if len(DoctorDbArr) == 0{
 		c.JSON(200, gin.H{
 			"Code": "Request Handeled",
-			"Json": [1]string{},
+			"Json": []string{},
 		})
 	}else{
 		c.JSON(200, gin.H{
@@ -304,7 +304,7 @@ func GetViews(c *gin.Context) {
 		if len(EHRFileDBArr) == 0 {
 			c.JSON(200, gin.H{
 				"Code": "Request Handeled",
-				"Json": [1]string{},
+				"Json": []string{},
 			})
 		}else {			
 			c.JSON(200, gin.H{
@@ -385,7 +385,7 @@ func GetClient(c *gin.Context) {
 				c.JSON(200, gin.H{
 					"Code":  "Request Handeled",
 					"Json":  ClientsDB,
-					"Files": [1]string{},
+					"Files": []string{},
 				})
 			}else {
 				c.JSON(200, gin.H{
