@@ -30,11 +30,17 @@ func GetQuestions(c *gin.Context) {
 		QuestionsDbArr = append(QuestionsDbArr, QuestionsDb)
 		// log.Println(QuestionsDbArr)
 	}
-
-	c.JSON(200, gin.H{
-		"Code": "Request Handeled",
-		"Json": QuestionsDbArr,
-	})
+	if len(QuestionsDbArr) == 0 {
+		c.JSON(200, gin.H{
+			"Code": "Request Handeled",
+			"Json": [1]string{},
+		})
+	}else{	
+		c.JSON(200, gin.H{
+			"Code": "Request Handeled",
+			"Json": QuestionsDbArr,
+		})
+	}
 }
 func GetDoctors(c *gin.Context) {
 	var (
@@ -55,11 +61,18 @@ func GetDoctors(c *gin.Context) {
 		DoctorDbArr = append(DoctorDbArr, DoctorDb)
 		// log.Println(DoctorDbArr)
 	}
-
-	c.JSON(200, gin.H{
-		"Code": "Request Handeled",
-		"Json": DoctorDbArr,
-	})
+	
+	if len(DoctorDbArr) == 0{
+		c.JSON(200, gin.H{
+			"Code": "Request Handeled",
+			"Json": [1]string{},
+		})
+	}else{
+		c.JSON(200, gin.H{
+			"Code": "Request Handeled",
+			"Json": DoctorDbArr,
+		})
+	}
 }
 func Statistics(c *gin.Context) {
 	var (
@@ -242,10 +255,17 @@ func GetClients(c *gin.Context) {
 			// log.Println(ClientsDBArr)
 		}
 
-		c.JSON(200, gin.H{
-			"Code": "Request Handeled",
-			"Json": ClientsDBArr,
-		})
+		if len(ClientsDBArr) == 0 {
+			c.JSON(200, gin.H{
+				"Code": "Request Handeled",
+				"Json": [1]string{},
+			})
+		}else{
+			c.JSON(200, gin.H{
+				"Code": "Request Handeled",
+				"Json": ClientsDBArr,
+			})
+		}
 	} else {
 		c.JSON(400, gin.H{
 			"Code": "No Permissions",
@@ -281,11 +301,18 @@ func GetViews(c *gin.Context) {
 			EHRFileDBArr = append(EHRFileDBArr, EHRFileDB)
 			log.Println(EHRFileDBArr)
 		}
+		if len(EHRFileDBArr) == 0 {
+			c.JSON(200, gin.H{
+				"Code": "Request Handeled",
+				"Json": [1]string{},
+			})
+		}else {			
+			c.JSON(200, gin.H{
+				"Code": "Request Handeled",
+				"Json": EHRFileDBArr,
+			})
+		}
 
-		c.JSON(200, gin.H{
-			"Code": "Request Handeled",
-			"Json": EHRFileDBArr,
-		})
 	} else {
 		c.JSON(400, gin.H{
 			"Code": "No Permissions",
@@ -354,11 +381,19 @@ func GetClient(c *gin.Context) {
 		if ClientsDB.Name != "" {
 			log.Println(c.Request.URL.RawQuery)
 			ClientsDB.Password = "null"
-			c.JSON(200, gin.H{
-				"Code":  "Request Handeled",
-				"Json":  ClientsDB,
-				"Files": ViewsArr,
-			})
+			if len(ViewsArr) == 0 {
+				c.JSON(200, gin.H{
+					"Code":  "Request Handeled",
+					"Json":  ClientsDB,
+					"Files": [1]string{},
+				})
+			}else {
+				c.JSON(200, gin.H{
+					"Code":  "Request Handeled",
+					"Json":  ClientsDB,
+					"Files": ViewsArr,
+				})
+			}
 		} else {
 			c.JSON(400, gin.H{
 				"Code": "User NotFound",
