@@ -258,7 +258,7 @@ func GetClients(c *gin.Context) {
 		if len(ClientsDBArr) == 0 {
 			c.JSON(200, gin.H{
 				"Code": "Request Handeled",
-				"Json": [1]string{},
+				"Json": []string{},
 			})
 		}else{
 			c.JSON(200, gin.H{
