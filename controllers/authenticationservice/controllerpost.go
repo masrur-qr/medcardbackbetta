@@ -136,7 +136,6 @@ func Signup(c *gin.Context) {
 			"Code": "Succeded",
 		})
 	}
-
 }
 func Signout(c *gin.Context) {
 	http.SetCookie(c.Writer, &http.Cookie{

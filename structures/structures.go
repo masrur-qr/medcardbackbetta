@@ -16,7 +16,7 @@ type Signin struct {
 }
 type Signup struct {
 	Userid       string `bson:"_id"`
-	Phone        int32  `json:"phone"`
+	Phone        string  `json:"phone"`
 	Password     string `json:"password"`
 	Email        string `json:"email"`
 	Name         string `json:"name"`
