@@ -12,12 +12,13 @@ import (
 func Handlers(){
 	r := gin.Default()
 
-	r.StaticFS("/static", gin.Dir("./static", true))
+	// r.StaticFS("/static", gin.Dir("./static", true))
+	r.StaticFS("/static", gin.Dir("./static", false))
 	r.Use(controllers.Cors)
 
 	r.POST("/insertquestion",controllers.InsertQuestions)
 	r.POST("/profilechange",controllers.ProfileChange)
-
+	r.GET("/link",ehrcontroller.ExpiredLinks)
 	// ================================== New Route ==============================
 
 	r.POST("/signup",authenticationservice.Signup)

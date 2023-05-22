@@ -66,6 +66,7 @@ type Admin struct {
 type Views struct {
 	Id            string `bson:"_id"`
 	ClientFLSname string `json:"clientFLSname"`
+	DoctorFLSname string `json:"doctorFLSname"`
 	ClientId      string `json:"clientid"`
 	DoctorId      string `json:"doctorid"`
 	Sickness      string `json:"sickness"`

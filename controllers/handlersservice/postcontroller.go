@@ -246,6 +246,7 @@ func ProfileChange(c *gin.Context) {
 	}
 }
 
+
 func Cors(c *gin.Context) {
 	c.Writer.Header().Set("Access-Control-Allow-Origin", evtvariables.IpUrl)
 	c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
