@@ -339,9 +339,15 @@ func ListViewsAdmin(c *gin.Context) {
 			cur.Decode(&DecodeViews)
 			DecodeViewsArr = append(DecodeViewsArr, DecodeViews)
 		}
-		c.JSON(200, gin.H{
-			"Views": DecodeViewsArr,
-		})
+		if len(DecodeViewsArr) == 0{
+			c.JSON(200, gin.H{
+				"Views": []string{},
+			})
+		}else{
+			c.JSON(200, gin.H{
+				"Views": DecodeViewsArr,
+			})
+		}
 	} else {
 		c.JSON(400, gin.H{
 			"Code": "No Permissions",
