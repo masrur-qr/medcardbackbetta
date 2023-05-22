@@ -328,7 +328,7 @@ func ListViewsAdmin(c *gin.Context) {
 			DecodeViewsArr []structures.Views
 		)
 		Authenticationservice()
-		client := client.Database("MredCard").Collection("views")
+		client := client.Database("MedCard").Collection("views")
 		cur, err := client.Find(ctx, bson.M{})
 		if err != nil {
 			fmt.Printf("Error No user found%v", err)
