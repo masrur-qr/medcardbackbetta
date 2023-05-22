@@ -322,7 +322,7 @@ func GetViews(c *gin.Context) {
 func ListViewsAdmin(c *gin.Context) {
 	CookieData := jwtgen.Velidation(c)
 
-	if CookieData.Permissions == "Admin" {
+	if CookieData.Permissions == "admin" {
 		var (
 			DecodeViews    structures.Views
 			DecodeViewsArr []structures.Views
