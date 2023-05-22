@@ -61,6 +61,7 @@ func InsertQuestions(c *gin.Context) {
 		QuestionsDb GlobeStruct
 	)
 	c.ShouldBindJSON(&Questions)
+	fmt.Printf("Questions: %v\n", Questions)
 	// """"""""""""""""""""""JWT VALIDATION""""""""""""""""""""""""""
 	ClaimsData := jwtgen.Velidation(c)
 	log.Println(ClaimsData)
@@ -76,7 +77,7 @@ func InsertQuestions(c *gin.Context) {
 
 	// checkPointOne, checkPointTwo := velidation.TestTheStruct(c, "questiontitle:questiontext:questionauthorname", string(valueStruct), "FieldsCheck:true,DBCheck:false", "", "")
 	Exist, Empty := velidation.TestTheQuestion(string(valueStruct))
-	if Exist  && !Empty  {
+	if Exist == true  && Empty == false  {
 		var primitiveId = primitive.NewObjectID().Hex()
 		Questions.QuestionId = primitiveId
 
@@ -218,8 +219,7 @@ func ProfileChange(c *gin.Context) {
 			DecodedSigninStruct.Permissions = CookieData.Permissions
 			DecodedSigninStruct.Email = ChangeStruct.Email
 			DecodedSigninStruct.Phone = ChangeStruct.Phone
-			if ChangeStruct.Password != "" {
-				hashedPass, err := bycrypt.HashPassword(ChangeStruct.Password)
+			if ChangeStruct.Password != "" && ChangeStruct.Password != "null"hPassword(ChangeStruct.Password)
 				if err != nil {
 					log.Printf("Err Hash%v", err)
 				}

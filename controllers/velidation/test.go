@@ -48,6 +48,7 @@ func TestTheQuestion(valueStr string) (bool, bool) {
 		isquestionExist bool = false
 	)
 	if Questions.QuestionsTitle == "" || Questions.QuestionsText == "" || Questions.QuestionsAuthorName == "" {
+		fmt.Println("one")
 		isFieldEmpty = true
 	} else {
 		Authenticationservice()
