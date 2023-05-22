@@ -216,3 +216,4 @@ func staticFiles(c *gin.Context, path string, id string) {
 		http.ServeFile(c.Writer, c.Request, path+imgId)
 	}
 }
+

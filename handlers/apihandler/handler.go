@@ -35,6 +35,7 @@ func Handlers(){
 	r.GET("/statistics",controllers.Statistics)
 	r.GET("/getclients",controllers.GetClients)
 	r.GET("/getviews",controllers.GetViews)
+	r.GET("/listviews",controllers.ListViewsAdmin)
 
 	// Port := os.Getenv("PORT")
 	// if Port == ""{
