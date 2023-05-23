@@ -165,7 +165,7 @@ func ProfileChange(c *gin.Context) {
 		// c.ShouldBindJSON(&ChangeStruct)
 		log.Printf("ds2%v\n", ChangeStruct)
 		// log.Printf("ds3%v\n", ChangeStructHistory)
-		checkPointOne, checkPointTwo := velidation.TestTheStruct(c, "phone:name:surname:lastname:position:adress:biography:email", string(valueStruct), "FieldsCheck:true,DBCheck:true", "doctor", CookieData.Id)
+		checkPointOne, checkPointTwo := velidation.TestTheStruct(c, "phone:name:surname:lastname:position:adress:email", string(valueStruct), "FieldsCheck:true,DBCheck:true", "doctor", CookieData.Id)
 		log.Println(CheckpointPassed)
 		collection.FindOne(ctx, bson.M{"name": ChangeStruct.Name, "surname": ChangeStruct.Surname, "permissions": CookieData.Permissions}).Decode(&DecodedSigninStruct)
 
