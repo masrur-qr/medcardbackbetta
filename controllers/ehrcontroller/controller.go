@@ -48,6 +48,7 @@ func DoctorClientForView(c *gin.Context) {
 	var (
 		ViewStruct       structures.Views
 		ViewStructDecode structures.Views
+		DoctorDecode structures.SignupDoctor
 	)
 	c.ShouldBindJSON(&ViewStruct)
 	CookieData := jwtgen.Velidation(c)
@@ -64,15 +65,19 @@ func DoctorClientForView(c *gin.Context) {
 		// """"""""""""""""""""""""""""""""""DB CONNECTION""""""""""""""""""""""""""""""""""""""""""""""""""""
 		Authenticationservice()
 		collection := client.Database("MedCard").Collection("views")
+		collectionToDoc := client.Database("MedCard").Collection("users")
 		// """"""""""""""""""""""""""""""""""DB CONNECTION""""""""""""""""""""""""""""""""""""""""""""""""""""
 		err := collection.FindOne(ctx, bson.M{"clientid": CookieData.Id, "doctorid": ViewStruct.DoctorId}).Decode(&ViewStructDecode)
 		if err != nil {
 			log.Printf("Find ERR views%v\n", err)
 		}
-		if isPassedFields == true && ViewStructDecode.Sickness == "" {
+		// """"""""""""""""""""""""""""""""""DB CONNECTION""""""""""""""""""""""""""""""""""""""""""""""""""""
+		collectionToDoc.FindOne(ctx, bson.M{"_id":ViewStruct.DoctorId}).Decode(&DoctorDecode)
+		if isPassedFields == true && ViewStructDecode.Sickness == "" &&  DoctorDecode.Userid != ""{
 			premetivid := primitive.NewObjectID().Hex()
 			ViewStruct.Id = premetivid
 			ViewStruct.ClientId = CookieData.Id
+			ViewStruct.DoctorFLSname = DoctorDecode.Name + " " + DoctorDecode.Lastname
 			ViewStruct.Date = ""
 			_, err := collection.InsertOne(ctx, ViewStruct)
 			if err != nil {
