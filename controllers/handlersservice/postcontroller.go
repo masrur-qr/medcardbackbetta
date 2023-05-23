@@ -219,7 +219,7 @@ func ProfileChange(c *gin.Context) {
 			DecodedSigninStruct.Permissions = CookieData.Permissions
 			DecodedSigninStruct.Email = ChangeStruct.Email
 			DecodedSigninStruct.Phone = ChangeStruct.Phone
-			if ChangeStruct.Password != "" && ChangeStruct.Password != "null" {
+			if ChangeStruct.Password != "" {
 				hashedPass, err := bycrypt.HashPassword(ChangeStruct.Password)
 				if err != nil {
 					log.Printf("Err Hash%v", err)
