@@ -149,7 +149,7 @@ func AddFilesToEhr(c *gin.Context) {
 	if isPassedFields == true {
 		premetivid := primitive.NewObjectID().Hex()
 		FilesStruct.Id = premetivid
-		FilesStruct.ImgUrl = handlefile.Handlefile(c, "./static/upload")
+		FilesStruct.ImgUrl = handlefile.Handlefile(c, "./static/uploadfille")
 		collection.InsertOne(ctx, FilesStruct)
 		c.JSON(200, gin.H{
 			"Code": "Request Seccessfully Handleed",
