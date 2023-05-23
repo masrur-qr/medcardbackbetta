@@ -145,7 +145,7 @@ func ProfileChange(c *gin.Context) {
 			if errIMG != nil {
 				ChangeStruct.ImgUrl = DecodedSigninStruct.ImgUrl
 			} else {
-				imgid := handlefile.Handlefile(c, "./")
+				imgid := handlefile.Handlefile(c, "./static")
 				ChangeStruct.ImgUrl = imgid
 			}
 			_, err = collection.ReplaceOne(ctx, bson.M{"_id": CookieData.Id}, ChangeStruct)
