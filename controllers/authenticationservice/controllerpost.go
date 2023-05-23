@@ -230,7 +230,7 @@ func SignupDoctor(c *gin.Context) {
 		SignupDoctor.Password = hashedPass
 		SignupDoctor.Userid = primitiveid
 		SignupDoctor.Permissions = "doctor"
-		SignupDoctor.ImgUrl = handlefile.Handlefile(c, "./static/upload")
+		SignupDoctor.ImgUrl = handlefile.Handlefile(c, "../static/upload")
 		//   SignupDoctor.History = append(SignupDoctor.History, structures.History{
 		// 	Year: "2022-12",
 		// 	Position: "jfdfdd",
