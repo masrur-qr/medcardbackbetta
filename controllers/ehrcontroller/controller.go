@@ -59,7 +59,7 @@ func DoctorClientForView(c *gin.Context) {
 		log.Printf("Marshel err %v\n", err)
 	}
 
-	if CookieData.Permissions == "client" {
+	if CookieData.Permissions == "client"  {
 		isPassedFields, _ := velidation.TestTheStruct(c, "clientFLSname:doctorid:sickness:phone", string(stringJSON), "FieldsCheck:true,DBCheck:false", "", "")
 
 		// """"""""""""""""""""""""""""""""""DB CONNECTION""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -102,15 +102,14 @@ func DoctorClientForView(c *gin.Context) {
 
 		if ViewStructDecode.Sickness != "" && isPassedFields == true {
 			collection.DeleteOne(ctx, bson.M{"clientid": ViewStruct.ClientId, "doctorid": ViewStruct.DoctorId})
-
 			// ?Create time zone from date and time
 			splitedDate := strings.Split(ViewStruct.Date, "-")
 			splitedTime := strings.Split(strings.Split(ViewStruct.Date, ";")[1], ":")
 			Year, _ := strconv.Atoi(splitedDate[0])
 			Month, _ := strconv.Atoi(splitedDate[1])
-			Date, _ := strconv.Atoi(strings.Split(splitedDate[2], ";")[0])
+			Date := strings.Split(splitedDate[2], ";")[0]
 			Hour, _ := strconv.Atoi(splitedTime[0])
-			Minute, _ := strconv.Atoi(splitedTime[1])
+			Minute :=  splitedTime[1]
 			dateZoneFormat := fmt.Sprintf("%v-0%v-%vT%v:%v:%v.%vZ",Year,Month,Date,Hour,Minute,"00","050")
 			ViewStructDecode.Date = dateZoneFormat
 			// ? insert into db
@@ -119,13 +118,74 @@ func DoctorClientForView(c *gin.Context) {
 				log.Printf("Insert || delete Error%v\n", err)
 				return
 			}
+
+			// ? Call deletion func to remove views from db
+			go removeViewsFromDB(ViewStructDecode.Id)
 		} else {
 			c.JSON(400, gin.H{
 				"Code": "Cannot Find the user",
 			})
 		}
+	} else if CookieData.Permissions == "admin" {
+		isPassedFields, _ := velidation.TestTheStruct(c, "clientFLSname:doctorid:clientid:sickness:phone", string(stringJSON), "FieldsCheck:true,DBCheck:false", "", "")
+		// """"""""""""""""""""""""""""""""""DB CONNECTION""""""""""""""""""""""""""""""""""""""""""""""""""""
+		Authenticationservice()
+		collection := client.Database("MedCard").Collection("views")
+		// """"""""""""""""""""""""""""""""""DB CONNECTION""""""""""""""""""""""""""""""""""""""""""""""""""""
+		err := collection.FindOne(ctx, bson.M{"clientid": ViewStruct.ClientId, "doctorid": ViewStruct.DoctorId}).Decode(&ViewStructDecode)
+		if err != nil {
+			log.Printf("Find ERR views%v\n", err)
+		}
+		if isPassedFields == true && ViewStructDecode.Sickness == ""{
+			premetivid := primitive.NewObjectID().Hex()
+			ViewStruct.Id = premetivid
+			ViewStruct.ClientId = CookieData.Id
+			ViewStruct.DoctorFLSname = DoctorDecode.Name + " " + DoctorDecode.Lastname
+			ViewStruct.Date = ""
+			_, err := collection.InsertOne(ctx, ViewStruct)
+			if err != nil {
+				log.Printf("Insert ERR views%v\n", err)
+			}
+		} else {
+			c.JSON(400, gin.H{
+				"Code": "You Just pusted such request",
+			})
+		}
 	}
 }
+func removeViewsFromDB(id string){
+	var (
+		DecodedViews structures.Views
+	)
+	fmt.Println(id)
+	Authenticationservice()
+	conn := client.Database("MedCard").Collection("views")
+	conn.FindOne(ctx,bson.M{"_id":id}).Decode(&DecodedViews)
+
+	//? Colc all time in second
+	timeParse, err := time.Parse(time.RFC3339,DecodedViews.Date)
+	fmt.Println(DecodedViews.Date)
+	fmt.Println(DecodedViews.Date)
+	if err != nil {
+		fmt.Printf("Error parse the time%v",err)
+	}
+	fmt.Println(timeParse.Hour(),timeParse.Minute())
+	MinutesForRm := ((((timeParse.Hour() - time.Now().Hour()) * 60 ) + (timeParse.Minute() - time.Now().Minute())) + 1)
+	fmt.Println(MinutesForRm)
+	fmt.Println(time.Now().Hour())
+
+	if DecodedViews.Date != ""{
+		select {
+		case <- time.After(time.Duration(MinutesForRm)*time.Minute):
+			conn.DeleteOne(ctx,bson.M{"_id":id})
+			fmt.Println("User removed")
+		}
+
+	}else{
+		fmt.Println("no date")
+	}
+}
+// bypass with potsman
 func AddFilesToEhr(c *gin.Context) {
 	var (
 		FilesStruct structures.File

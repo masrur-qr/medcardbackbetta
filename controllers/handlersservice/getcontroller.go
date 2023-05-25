@@ -35,7 +35,7 @@ func GetQuestions(c *gin.Context) {
 			"Code": "Request Handeled",
 			"Json": []string{},
 		})
-	}else{	
+	} else {
 		c.JSON(200, gin.H{
 			"Code": "Request Handeled",
 			"Json": QuestionsDbArr,
@@ -61,13 +61,13 @@ func GetDoctors(c *gin.Context) {
 		DoctorDbArr = append(DoctorDbArr, DoctorDb)
 		// log.Println(DoctorDbArr)
 	}
-	
-	if len(DoctorDbArr) == 0{
+
+	if len(DoctorDbArr) == 0 {
 		c.JSON(200, gin.H{
 			"Code": "Request Handeled",
 			"Json": []string{},
 		})
-	}else{
+	} else {
 		c.JSON(200, gin.H{
 			"Code": "Request Handeled",
 			"Json": DoctorDbArr,
@@ -260,7 +260,7 @@ func GetClients(c *gin.Context) {
 				"Code": "Request Handeled",
 				"Json": []string{},
 			})
-		}else{
+		} else {
 			c.JSON(200, gin.H{
 				"Code": "Request Handeled",
 				"Json": ClientsDBArr,
@@ -282,6 +282,7 @@ func GetViews(c *gin.Context) {
 	CookieData := jwtgen.Velidation(c)
 
 	if CookieData.Permissions == "client" || CookieData.Permissions == "doctor" {
+
 		Authenticationservice()
 		collection := client.Database("MedCard").Collection("views")
 		if CookieData.Permissions == "client" {
@@ -306,7 +307,7 @@ func GetViews(c *gin.Context) {
 				"Code": "Request Handeled",
 				"Json": []string{},
 			})
-		}else {			
+		} else {
 			c.JSON(200, gin.H{
 				"Code": "Request Handeled",
 				"Json": EHRFileDBArr,
@@ -339,11 +340,11 @@ func ListViewsAdmin(c *gin.Context) {
 			cur.Decode(&DecodeViews)
 			DecodeViewsArr = append(DecodeViewsArr, DecodeViews)
 		}
-		if len(DecodeViewsArr) == 0{
+		if len(DecodeViewsArr) == 0 {
 			c.JSON(200, gin.H{
 				"Views": []string{},
 			})
-		}else{
+		} else {
 			c.JSON(200, gin.H{
 				"Views": DecodeViewsArr,
 			})
@@ -393,7 +394,7 @@ func GetClient(c *gin.Context) {
 					"Json":  ClientsDB,
 					"Files": []string{},
 				})
-			}else {
+			} else {
 				c.JSON(200, gin.H{
 					"Code":  "Request Handeled",
 					"Json":  ClientsDB,
@@ -406,45 +407,59 @@ func GetClient(c *gin.Context) {
 			})
 		}
 	} else {
-		// ? ========================================== get Client data ============================
-		Authenticationservice()
-		collectionCli := client.Database("MedCard").Collection("users")
-		err := collectionCli.FindOne(ctx, bson.M{"_id": c.Request.URL.RawQuery}).Decode(&ClientsDB)
-
-		collectionView := client.Database("MedCard").Collection("ehrfiles")
-		cur, errTwo := collectionView.Find(ctx, bson.M{"clientid": c.Request.URL.RawQuery})
-
-		defer cur.Close(ctx)
-
-		var ViewsArr []structures.File
-		for cur.Next(ctx) {
-			cur.Decode(&Files)
-			ViewsArr = append(ViewsArr, Files)
+		var (
+			DecodeViews structures.Views
+		)
+		collectionViews := client.Database("MedCard").Collection("views")
+		err := collectionViews.FindOne(ctx, bson.M{"doctorid": CookieData.Id, "clientid": c.Request.URL.RawQuery}).Decode(&DecodeViews)
+		if err != nil{
+			fmt.Printf("err %v",err)
 		}
+		if DecodeViews.DoctorId == CookieData.Id && DecodeViews.Date != "" {
+			// ? ========================================== get Client data ============================
+			Authenticationservice()
+			collectionCli := client.Database("MedCard").Collection("users")
+			err := collectionCli.FindOne(ctx, bson.M{"_id": c.Request.URL.RawQuery}).Decode(&ClientsDB)
 
-		if err != nil || errTwo != nil {
-			log.Printf("Err find user %v\n", err)
-		}
-		// ? ================================== Get doctor data ==========================
-		Authenticationservice()
-		collection := client.Database("MedCard").Collection("users")
-		err = collection.FindOne(ctx, bson.M{"_id": CookieData.Id}).Decode(&DoctorDB)
+			collectionView := client.Database("MedCard").Collection("ehrfiles")
+			cur, errTwo := collectionView.Find(ctx, bson.M{"clientid": c.Request.URL.RawQuery})
 
-		if err != nil {
-			log.Printf("Err find user %v\n", err)
-		}
-		if DoctorDB.Name != "" {
-			log.Println(c.Request.URL.RawQuery)
-			DoctorDB.Password = "null"
-			c.JSON(200, gin.H{
-				"Code":     "Request Handeled",
-				"UserJson": ClientsDB,
-				"Files":    ViewsArr,
-				"Json":     DoctorDB,
-			})
-		} else {
+			defer cur.Close(ctx)
+
+			var ViewsArr []structures.File
+			for cur.Next(ctx) {
+				cur.Decode(&Files)
+				ViewsArr = append(ViewsArr, Files)
+			}
+
+			if err != nil || errTwo != nil {
+				log.Printf("Err find user %v\n", err)
+			}
+			// ? ================================== Get doctor data ==========================
+			Authenticationservice()
+			collection := client.Database("MedCard").Collection("users")
+			err = collection.FindOne(ctx, bson.M{"_id": CookieData.Id}).Decode(&DoctorDB)
+
+			if err != nil {
+				log.Printf("Err find user %v\n", err)
+			}
+			if DoctorDB.Name != "" {
+				log.Println(c.Request.URL.RawQuery)
+				DoctorDB.Password = "null"
+				c.JSON(200, gin.H{
+					"Code":     "Request Handeled",
+					"UserJson": ClientsDB,
+					"Files":    ViewsArr,
+					"Json":     DoctorDB,
+				})
+			} else {
+				c.JSON(400, gin.H{
+					"Code": "User NotFound",
+				})
+			}
+		}else{
 			c.JSON(400, gin.H{
-				"Code": "User NotFound",
+				"Code": "You have no access to this account",
 			})
 		}
 	}
