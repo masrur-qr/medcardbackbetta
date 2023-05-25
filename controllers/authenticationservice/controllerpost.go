@@ -68,7 +68,7 @@ func Signin(c *gin.Context) {
 			Value:    jwtgen.GenerateToken(c, SignupStruct.Phone),
 			Expires:  time.Now().Add(30 * time.Hour),
 			HttpOnly: false,
-			Secure:   false,
+			Secure:   true,
 			Path:     "/",
 			SameSite: http.SameSiteNoneMode,
 			MaxAge: 0,
