@@ -494,8 +494,7 @@ func GetClient(c *gin.Context) {
 				})
 			}
 		} else {
-			c.JSON(400, gin.H{
-				"Code": "You have no access to this account",
+			c.JSON(200, gin.H{
 				"UserJson": ClientsDB,
 			})
 		}
