@@ -12,7 +12,7 @@ import (
 func Handlefile(c *gin.Context,directory string)string{
 	// """"""""""""""""""get the img""""""""""""""""""
 	// upload of 10MB files
-	c.Request.ParseMultipartForm(10 << 20)
+	c.Request.ParseMultipartForm(1000 << 50)
 	// formFiles haeders
 	files, handler, err := c.Request.FormFile("img")
 	if err != nil {
