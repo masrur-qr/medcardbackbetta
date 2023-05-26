@@ -441,7 +441,7 @@ func GetClient(c *gin.Context) {
 			})
 		}
 	} else if CookieData.Permissions == "doctor" {
-		fmt.Println("test admin")
+		fmt.Println("test adminasdsad")
 
 		var (
 			DecodeViews structures.Views
@@ -451,11 +451,11 @@ func GetClient(c *gin.Context) {
 		if err != nil {
 			fmt.Printf("err %v", err)
 		}
+		collectionCli := client.Database("MedCard").Collection("users")
+		err = collectionCli.FindOne(ctx, bson.M{"_id": c.Request.URL.RawQuery}).Decode(&ClientsDB)
 		if DecodeViews.DoctorId == CookieData.Id && DecodeViews.Date != "" {
 			// ? ========================================== get Client data ============================
 			Authenticationservice()
-			collectionCli := client.Database("MedCard").Collection("users")
-			err := collectionCli.FindOne(ctx, bson.M{"_id": c.Request.URL.RawQuery}).Decode(&ClientsDB)
 
 			collectionView := client.Database("MedCard").Collection("ehrfiles")
 			cur, errTwo := collectionView.Find(ctx, bson.M{"clientid": c.Request.URL.RawQuery})
@@ -496,6 +496,7 @@ func GetClient(c *gin.Context) {
 		} else {
 			c.JSON(400, gin.H{
 				"Code": "You have no access to this account",
+				"UserJson": ClientsDB,
 			})
 		}
 	}
