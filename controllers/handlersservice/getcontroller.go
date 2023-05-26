@@ -437,7 +437,7 @@ func GetClient(c *gin.Context) {
 				"Code": "User NotFound",
 			})
 		}
-	} else {
+	} else if CookieData.Permissions == "doctor" {
 		var (
 			DecodeViews structures.Views
 		)
