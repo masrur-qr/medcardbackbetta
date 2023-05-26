@@ -325,11 +325,14 @@ func ListViewsAdmin(c *gin.Context) {
 
 	if CookieData.Permissions == "admin" {
 		var (
-			DecodeViews    structures.Views
-			DecodeViewsArr []structures.Views
+			DecodeViews     structures.Views
+			DecodeViewsArch structures.Views
+			DecodeViewsArr  []structures.Views
 		)
 		Authenticationservice()
+		connArch := client.Database("MedCard").Collection("viewsarchive")
 		client := client.Database("MedCard").Collection("views")
+		// ! Get Unarchived views
 		cur, err := client.Find(ctx, bson.M{})
 		if err != nil {
 			fmt.Printf("Error No user found%v", err)
@@ -340,6 +343,17 @@ func ListViewsAdmin(c *gin.Context) {
 			cur.Decode(&DecodeViews)
 			DecodeViewsArr = append(DecodeViewsArr, DecodeViews)
 		}
+		// !  Get Archived views
+		curArch, err := connArch.Find(ctx, bson.M{})
+		if err != nil {
+			fmt.Printf("Error Arch %v", err)
+		}
+		defer curArch.Close(ctx)
+		for curArch.Next(ctx) {
+			curArch.Decode(&DecodeViewsArch)
+			DecodeViewsArr = append(DecodeViewsArr, DecodeViewsArch)
+		}
+
 		if len(DecodeViewsArr) == 0 {
 			c.JSON(200, gin.H{
 				"Views": []string{},
@@ -406,14 +420,31 @@ func GetClient(c *gin.Context) {
 				"Code": "User NotFound",
 			})
 		}
+	} else if CookieData.Id == "admin" {
+		Authenticationservice()
+		collection := client.Database("MedCard").Collection("users")
+		collection.FindOne(ctx, bson.M{"_id": c.Request.URL.RawQuery}).Decode(&ClientsDB)
+
+		if ClientsDB.Name != "" {
+			log.Println(c.Request.URL.RawQuery)
+			ClientsDB.Password = "null"
+			c.JSON(200, gin.H{
+				"Code": "Request Handeled",
+				"Json": ClientsDB,
+			})
+		} else {
+			c.JSON(400, gin.H{
+				"Code": "User NotFound",
+			})
+		}
 	} else {
 		var (
 			DecodeViews structures.Views
 		)
 		collectionViews := client.Database("MedCard").Collection("views")
 		err := collectionViews.FindOne(ctx, bson.M{"doctorid": CookieData.Id, "clientid": c.Request.URL.RawQuery}).Decode(&DecodeViews)
-		if err != nil{
-			fmt.Printf("err %v",err)
+		if err != nil {
+			fmt.Printf("err %v", err)
 		}
 		if DecodeViews.DoctorId == CookieData.Id && DecodeViews.Date != "" {
 			// ? ========================================== get Client data ============================
@@ -457,7 +488,7 @@ func GetClient(c *gin.Context) {
 					"Code": "User NotFound",
 				})
 			}
-		}else{
+		} else {
 			c.JSON(400, gin.H{
 				"Code": "You have no access to this account",
 			})

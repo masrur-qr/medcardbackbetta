@@ -49,7 +49,7 @@ func DoctorClientForView(c *gin.Context) {
 		ViewStruct       structures.Views
 		ViewStructDecode structures.Views
 		DoctorDecode     structures.SignupDoctor
-		DoctorDecodeUser     structures.Signup
+		DoctorDecodeUser structures.Signup
 	)
 	c.ShouldBindJSON(&ViewStruct)
 	CookieData := jwtgen.Velidation(c)
@@ -77,10 +77,10 @@ func DoctorClientForView(c *gin.Context) {
 	Authenticationservice()
 	collection := client.Database("MedCard").Collection("views")
 	collectionToDoc := client.Database("MedCard").Collection("users")
-	
+
 	if CookieData.Permissions == "client" {
 		isPassedFields, _ := velidation.TestTheStruct(c, "doctorid:sickness:phone", string(stringJSON), "FieldsCheck:true,DBCheck:false", "", "")
-		
+
 		err := collection.FindOne(ctx, bson.M{"clientid": CookieData.Id, "doctorid": ViewStruct.DoctorId}).Decode(&ViewStructDecode)
 		if err != nil {
 			log.Printf("Find ERR views%v\n", err)
@@ -92,7 +92,7 @@ func DoctorClientForView(c *gin.Context) {
 		if isPassedFields == true && ViewStructDecode.Sickness == "" && DoctorDecode.Userid != "" && DoctorDecodeUser.Userid != "" {
 			premetivid := primitive.NewObjectID().Hex()
 			ViewStruct.Id = premetivid
-			ViewStruct.ClientFLSname = fmt.Sprintf("%v %v %v",DoctorDecodeUser.Name,DoctorDecodeUser.Surname, DoctorDecodeUser.Lastname)
+			ViewStruct.ClientFLSname = fmt.Sprintf("%v %v %v", DoctorDecodeUser.Name, DoctorDecodeUser.Surname, DoctorDecodeUser.Lastname)
 			ViewStruct.ClientId = CookieData.Id
 			ViewStruct.DoctorFLSname = DoctorDecode.Name + " " + DoctorDecode.Lastname
 			ViewStruct.Date = ""
@@ -152,7 +152,7 @@ func DoctorClientForView(c *gin.Context) {
 			premetivid := primitive.NewObjectID().Hex()
 			ViewStruct.Id = premetivid
 			ViewStruct.ClientId = CookieData.Id
-			ViewStruct.ClientFLSname = fmt.Sprintf("%v %v %v",DoctorDecodeUser.Name,DoctorDecodeUser.Surname, DoctorDecodeUser.Lastname)
+			ViewStruct.ClientFLSname = fmt.Sprintf("%v %v %v", DoctorDecodeUser.Name, DoctorDecodeUser.Surname, DoctorDecodeUser.Lastname)
 			ViewStruct.DoctorFLSname = DoctorDecode.Name + " " + DoctorDecode.Lastname
 			ViewStruct.Date = dateZoneFormat
 			_, err := collection.InsertOne(ctx, ViewStruct)
@@ -184,14 +184,33 @@ func removeViewsFromDB(id string) {
 	if err != nil {
 		fmt.Printf("Error parse the time%v", err)
 	}
-	fmt.Println(timeParse.Hour(), timeParse.Minute())
-	MinutesForRm := ((((timeParse.Hour() - time.Now().Hour()) * 60) + (timeParse.Minute() - time.Now().Minute())) + 1)
-	fmt.Println(MinutesForRm)
-	fmt.Println(time.Now().Hour())
+	fmt.Println(timeParse.Day() - time.Now().Day())
+	// fmt.Println((timeParse.Day()-time.Now().Day()) * 1440)
+	var MinutesForRm int
+	if time.Now().After(timeParse) == true {
+		MinutesForRm = ((((timeParse.Hour() - time.Now().Hour()) * 60) + (timeParse.Minute() - time.Now().Minute())) + 1)
+		fmt.Printf("Access will be denied after %v minutes",MinutesForRm)
+	} else {
+		if timeParse.Day() == time.Now().Day() {
+			MinutesForRm = ((((timeParse.Hour() - time.Now().Hour()) * 60) + (timeParse.Minute() - time.Now().Minute())) + 1)
+			fmt.Printf("Access will be denied after %v minutes",MinutesForRm)
+		}else{
+			MinutesForRm = ((((timeParse.Hour()) * 60) + (time.Now().Minute())) + 1) + (timeParse.Day()-time.Now().Day())*1440
+			fmt.Printf("Access will be denied after %v minutes",MinutesForRm)
+		}
+	}
 
 	if DecodedViews.Date != "" {
 		select {
 		case <-time.After(time.Duration(MinutesForRm) * time.Minute):
+			var (
+				DecodedViewsForArchive structures.Views
+			)
+			conn.FindOne(ctx, bson.M{"_id": id}).Decode(&DecodedViewsForArchive)
+
+			connArch := client.Database("MedCard").Collection("viewsarchive")
+			connArch.InsertOne(ctx, DecodedViewsForArchive)
+
 			conn.DeleteOne(ctx, bson.M{"_id": id})
 			fmt.Println("User removed")
 		}
