@@ -494,6 +494,7 @@ func GetClient(c *gin.Context) {
 				})
 			}
 		} else {
+			DoctorDB.Password = "null"
 			c.JSON(200, gin.H{
 				"UserJson": ClientsDB,
 			})
