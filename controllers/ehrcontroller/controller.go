@@ -89,7 +89,7 @@ func DoctorClientForView(c *gin.Context) {
 		// """""""""""""""""""""""""""""""""" Get Doctor""""""""""""""""""""""""""""""""""""""""""""""""""""
 		collectionToDoc.FindOne(ctx, bson.M{"_id": ViewStruct.DoctorId}).Decode(&DoctorDecode)
 		collectionToDoc.FindOne(ctx, bson.M{"_id": ViewStruct.ClientId}).Decode(&DoctorDecodeUser)
-		if isPassedFields == true && ViewStructDecode.Sickness == "" && DoctorDecode.Userid != "" && DoctorDecodeUser.Userid != "" {
+		if isPassedFields == true && ViewStructDecode.Sickness != "" && DoctorDecode.Userid != "" && DoctorDecodeUser.Userid != "" {
 			premetivid := primitive.NewObjectID().Hex()
 			ViewStruct.Id = premetivid
 			ViewStruct.ClientFLSname = fmt.Sprintf("%v %v", DoctorDecodeUser.Surname, DoctorDecodeUser.Name)
@@ -148,7 +148,7 @@ func DoctorClientForView(c *gin.Context) {
 		collectionToDoc.FindOne(ctx, bson.M{"_id": ViewStruct.DoctorId}).Decode(&DoctorDecode)
 		collectionToDoc.FindOne(ctx, bson.M{"_id": ViewStruct.ClientId}).Decode(&DoctorDecodeUser)
 		fmt.Println(DoctorDecodeUser)
-		if isPassedFields == true && ViewStructDecode.Sickness == "" {
+		if isPassedFields == true && ViewStructDecode.Sickness != "" {
 			premetivid := primitive.NewObjectID().Hex()
 			ViewStruct.Id = premetivid
 			ViewStruct.ClientId = CookieData.Id
