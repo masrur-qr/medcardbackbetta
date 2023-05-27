@@ -1,10 +1,12 @@
 package controllers
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"medcard-new/begening/controllers/jwtgen"
 	"medcard-new/begening/structures"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
@@ -442,18 +444,20 @@ func GetClient(c *gin.Context) {
 		}
 	} else if CookieData.Permissions == "doctor" {
 		fmt.Println("test adminasdsad")
+		fmt.Println(c.Request.URL.RawQuery)
 
 		var (
 			DecodeViews structures.Views
 		)
 		collectionViews := client.Database("MedCard").Collection("views")
-		err := collectionViews.FindOne(ctx, bson.M{"doctorid": CookieData.Id, "clientid": c.Request.URL.RawQuery}).Decode(&DecodeViews)
+		ctxForAccess , _ := context.WithTimeout(context.Background(), 5*time.Second)
+		err := collectionViews.FindOne(ctxForAccess, bson.M{"doctorid": CookieData.Id, "clientid": c.Request.URL.RawQuery}).Decode(&DecodeViews)
 		if err != nil {
-			fmt.Printf("err %v", err)
+			fmt.Printf("err doc %v", err)
 		}
 		collectionCli := client.Database("MedCard").Collection("users")
-		err = collectionCli.FindOne(ctx, bson.M{"_id": c.Request.URL.RawQuery}).Decode(&ClientsDB)
-		if DecodeViews.DoctorId == CookieData.Id && DecodeViews.Date != "" {
+		err = collectionCli.FindOne(ctxForAccess, bson.M{"_id": c.Request.URL.RawQuery}).Decode(&ClientsDB)
+		if DecodeViews.DoctorId == CookieData.Id && ClientsDB.Permissions != "doctor" {
 			// ? ========================================== get Client data ============================
 			Authenticationservice()
 
@@ -494,7 +498,7 @@ func GetClient(c *gin.Context) {
 				})
 			}
 		} else {
-			DoctorDB.Password = "null"
+			ClientsDB.Password = "null"
 			c.JSON(200, gin.H{
 				"UserJson": ClientsDB,
 			})

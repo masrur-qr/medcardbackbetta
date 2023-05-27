@@ -92,9 +92,9 @@ func DoctorClientForView(c *gin.Context) {
 		if isPassedFields == true && ViewStructDecode.Sickness == "" && DoctorDecode.Userid != "" && DoctorDecodeUser.Userid != "" {
 			premetivid := primitive.NewObjectID().Hex()
 			ViewStruct.Id = premetivid
-			ViewStruct.ClientFLSname = fmt.Sprintf("%v %v %v", DoctorDecodeUser.Name, DoctorDecodeUser.Surname, DoctorDecodeUser.Lastname)
+			ViewStruct.ClientFLSname = fmt.Sprintf("%v %v", DoctorDecodeUser.Surname, DoctorDecodeUser.Name)
 			ViewStruct.ClientId = CookieData.Id
-			ViewStruct.DoctorFLSname = DoctorDecode.Name + " " + DoctorDecode.Lastname
+			ViewStruct.DoctorFLSname =  DoctorDecode.Surname+ " " + DoctorDecode.Name
 			ViewStruct.Date = ""
 			_, err := collection.InsertOne(ctx, ViewStruct)
 			if err != nil {
@@ -152,8 +152,8 @@ func DoctorClientForView(c *gin.Context) {
 			premetivid := primitive.NewObjectID().Hex()
 			ViewStruct.Id = premetivid
 			ViewStruct.ClientId = CookieData.Id
-			ViewStruct.ClientFLSname = fmt.Sprintf("%v %v %v", DoctorDecodeUser.Name, DoctorDecodeUser.Surname, DoctorDecodeUser.Lastname)
-			ViewStruct.DoctorFLSname = DoctorDecode.Name + " " + DoctorDecode.Lastname
+			ViewStruct.ClientFLSname = fmt.Sprintf("%v %v", DoctorDecodeUser.Surname,DoctorDecodeUser.Name )
+			ViewStruct.DoctorFLSname = DoctorDecode.Surname + " " + DoctorDecode.Name
 			ViewStruct.Date = dateZoneFormat
 			_, err := collection.InsertOne(ctx, ViewStruct)
 			if err != nil {
