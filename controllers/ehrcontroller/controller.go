@@ -92,6 +92,7 @@ func DoctorClientForView(c *gin.Context) {
 		if isPassedFields == true && ViewStructDecode.Sickness == "" && DoctorDecode.Userid != "" && DoctorDecodeUser.Userid != "" {
 			premetivid := primitive.NewObjectID().Hex()
 			ViewStruct.Id = premetivid
+			ViewStruct.DoctorPhone = DoctorDecode.Phone
 			ViewStruct.ClientFLSname = fmt.Sprintf("%v %v", DoctorDecodeUser.Surname, DoctorDecodeUser.Name)
 			ViewStruct.ClientId = CookieData.Id
 			ViewStruct.DoctorFLSname = DoctorDecode.Surname + " " + DoctorDecode.Name
@@ -160,6 +161,7 @@ func DoctorClientForView(c *gin.Context) {
 		if isPassedFields == true && ViewStructDecode.Sickness == "" {
 			premetivid := primitive.NewObjectID().Hex()
 			ViewStruct.Id = premetivid
+			ViewStruct.DoctorPhone = DoctorDecode.Phone
 			ViewStruct.ClientFLSname = fmt.Sprintf("%v %v", DoctorDecodeUser.Surname, DoctorDecodeUser.Name)
 			ViewStruct.DoctorFLSname = DoctorDecode.Surname + " " + DoctorDecode.Name
 			ViewStruct.Date = dateZoneFormat
@@ -187,13 +189,9 @@ func removeViewsFromDB(id string) {
 
 	//? Colc all time in second
 	timeParse, err := time.Parse(time.RFC3339, DecodedViews.Date)
-	fmt.Println(DecodedViews.Date)
-	fmt.Println(DecodedViews.Date)
 	if err != nil {
 		fmt.Printf("Error parse the time%v", err)
 	}
-	fmt.Println(timeParse.Day() - time.Now().Day())
-	// fmt.Println((timeParse.Day()-time.Now().Day()) * 1440)
 	// ? Time managment if it expired tomrrow or today
 	var MinutesForRm int
 	if time.Now().After(timeParse) == true {

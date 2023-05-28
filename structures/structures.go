@@ -11,12 +11,12 @@ type Questions struct {
 type Signin struct {
 	Userid      string `bson:"_id"`
 	Permissions string `json:"permissions"`
-	Phone       string  `json:"phone"`
+	Phone       string `json:"phone"`
 	Password    string `json:"password"`
 }
 type Signup struct {
 	Userid       string `bson:"_id"`
-	Phone        string  `json:"phone"`
+	Phone        string `json:"phone"`
 	Password     string `json:"password"`
 	Email        string `json:"email"`
 	Name         string `json:"name"`
@@ -33,7 +33,7 @@ type Signup struct {
 }
 type SignupDoctor struct {
 	Userid      string `bson:"_id"`
-	Phone       string  `json:"phone"`
+	Phone       string `json:"phone"`
 	Password    string `json:"password"`
 	Email       string `json:"email"`
 	Name        string `json:"name"`
@@ -54,7 +54,7 @@ type History struct {
 }
 type Admin struct {
 	Userid      string `bson:"_id"`
-	Phone       string  `json:"phone"`
+	Phone       string `json:"phone"`
 	Password    string `json:"password"`
 	Email       string `json:"email"`
 	Name        string `json:"name"`
@@ -71,7 +71,8 @@ type Views struct {
 	DoctorId      string `json:"doctorid"`
 	Sickness      string `json:"sickness"`
 	Date          string `json:"date"`
-	Phone         string  `json:"phone"`
+	ClientPhone   string `json:"clientphone"`
+	DoctorPhone   string `json:"doctorphone"`
 }
 type File struct {
 	Id            string `json:"id" bson:"_id"`
@@ -90,7 +91,7 @@ type GlobeStruct struct {
 	QuestionsAuthorName string `json:"questionauthorname"`
 	// ----------------------------------------------------
 	Userid       string `bson:"_id"`
-	Phone        string  `json:"phone"`
+	Phone        string `json:"phone"`
 	Password     string `json:"password"`
 	Email        string `json:"email"`
 	Name         string `json:"name"`
@@ -109,7 +110,7 @@ type GlobeStruct struct {
 	// History []History
 }
 type IpDB struct {
-	Id  string `bson:"ip"`
+	Id   string `bson:"ip"`
 	Ip   string `json:"ip"`
 	Data string `json:"data"`
 }
