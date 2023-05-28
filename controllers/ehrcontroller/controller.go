@@ -116,8 +116,11 @@ func DoctorClientForView(c *gin.Context) {
 			log.Printf("Find ERR views%v\n", err)
 		}
 		// log.Printf("Insert ERR views%v\n", isPassedFields)
+		// ? Set new time and validate it if it is expired date
+		now := time.FixedZone("tajikistan", 5*3600)
 
-		if ViewStructDecode.Sickness != "" && isPassedFields == true {
+		dateZoneFormatParse , _:= time.Parse(time.RFC3339,dateZoneFormat) 
+		if ViewStructDecode.Sickness != "" && isPassedFields == true && time.Now().In(now).Before(dateZoneFormatParse){
 			collection.DeleteOne(ctx, bson.M{"clientid": ViewStruct.ClientId, "doctorid": ViewStruct.DoctorId})
 
 			ViewStructDecode.Date = dateZoneFormat
@@ -131,9 +134,15 @@ func DoctorClientForView(c *gin.Context) {
 			// ? Call deletion func to remove views from db
 			go removeViewsFromDB(ViewStructDecode.Id)
 		} else {
-			c.JSON(400, gin.H{
-				"Code": "Cannot Find the user",
-			})
+			if !time.Now().In(now).Before(dateZoneFormatParse) {
+				c.JSON(400, gin.H{
+					"Code": "Invalid date",
+				})
+			}else{
+				c.JSON(400, gin.H{
+					"Code": "Cannot Find the user",
+				})
+			}
 		}
 	} else if CookieData.Permissions == "admin" {
 		isPassedFields, _ := velidation.TestTheStruct(c, "doctorid:date:clientid:sickness:phone", string(stringJSON), "FieldsCheck:true,DBCheck:false", "", "")
