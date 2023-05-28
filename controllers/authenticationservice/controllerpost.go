@@ -241,8 +241,8 @@ func SignupDoctor(c *gin.Context) {
 		//   })
 		collection.InsertOne(ctx, SignupDoctor)
 	}else if checkPointTwo == false {
-		c.JSON(302, gin.H{
-			"Code": "Error User already exist",
+		c.JSON(304, gin.H{
+			"Code": "Error User already exist OR this phone numbers are already taken",
 		})	
 	}
 }
