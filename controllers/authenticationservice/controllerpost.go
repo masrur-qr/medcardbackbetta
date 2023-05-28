@@ -138,8 +138,8 @@ func Signup(c *gin.Context) {
 			"Code": "Succeded",
 		})
 	}else if checkPointTwo == false {
-		c.JSON(304, gin.H{
-			"Code": "Error User already exist",
+		c.JSON(404, gin.H{
+			"Code": "Error User already exist OR this phone numbers are already taken",
 		})
 	}
 }

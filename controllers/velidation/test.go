@@ -162,11 +162,12 @@ func TestTheStruct(c *gin.Context, Required string, valueStruct string, options 
 			collection.FindOne(ctx, bson.M{"phone": SigninStruct.Phone}).Decode(&DecodedSigninStruct)
 			if DecodedSigninStruct.Name == "" {
 				IsPassedDB = true
-			} else {
-				c.JSON(202, gin.H{
-					"Code": "Error this phone numbers are already taken",
-				})
-			}
+			} 
+			// else {
+				// c.JSON(404, gin.H{
+					// "Code": "Error this phone numbers are already taken",
+				// })
+			// }
 		} else {
 			fmt.Println("Use exsist")
 		}
@@ -182,5 +183,7 @@ func TestTheStruct(c *gin.Context, Required string, valueStruct string, options 
 	// }
 
 	log.Printf("check%v\n", ControlCheck)
+	fmt.Printf("IsPassedDB: %v\n", IsPassedDB)
+	fmt.Printf("IsPassedFields: %v\n", IsPassedFields)
 	return IsPassedFields, IsPassedDB
 }

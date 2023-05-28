@@ -157,7 +157,7 @@ func ProfileChange(c *gin.Context) {
 				"Code": "Your Request Successfully Handeled",
 			})
 		}else if checkPointTwo == false {
-			c.JSON(304, gin.H{
+			c.JSON(404, gin.H{
 				"Code": "User not Found1.2",
 			})
 		}
@@ -209,7 +209,7 @@ func ProfileChange(c *gin.Context) {
 				"Code": "Your Request Successfully Handeled",
 			})
 		}else if checkPointTwo == false {
-			c.JSON(304, gin.H{
+			c.JSON(404, gin.H{
 				"Code": "User not Found1.2",
 			})
 		}
@@ -252,7 +252,7 @@ func ProfileChange(c *gin.Context) {
 				"Code": "Your Request Successfully Handeled",
 			})
 		}else if checkPointTwo == false {
-			c.JSON(304, gin.H{
+			c.JSON(404, gin.H{
 				"Code": "User not Found1.2",
 			})
 		}
