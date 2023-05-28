@@ -83,7 +83,7 @@ func TestTheStruct(c *gin.Context, Required string, valueStruct string, options 
 				}
 			}
 		}
-		fmt.Printf("strings.Split(optionsArr[1], \":\")[1]: %v\n", countFields)
+		// fmt.Printf("strings.Split(optionsArr[1], \":\")[1]: %v\n", countFields)
 		if countFields == len(splitTheRequired) {
 			IsPassedFields = true
 		} else {
@@ -93,59 +93,72 @@ func TestTheStruct(c *gin.Context, Required string, valueStruct string, options 
 		}
 	}
 	// """"""""""""""""""""""FIELDS CHECKER""""""""""""""""""""""""""
-	// """"""""""""""""""""""DB FOR EXISTENCE CHECKER""""""""""""""""""""""""""
-	fmt.Printf("strings.Split(optionsArr[1], \":\")[1]: %v\n", strings.Split(optionsArr[1], ":")[1])
+	// ! """"""""""""""""""""""DB FOR EXISTENCE CHECKER""""""""""""""""""""""""""
+	// fmt.Printf("strings.Split(optionsArr[1], \":\")[1]: %v\n", strings.Split(optionsArr[1], ":")[1])
 	if strings.Split(optionsArr[1], ":")[1] == "true" {
+
 		var (
 			SigninStruct        structures.GlobeStruct
 			DecodedSigninStruct structures.GlobeStruct
 		)
 		json.Unmarshal([]byte(valueStruct), &SigninStruct)
-		log.Println(SigninStruct)
+		// log.Println(SigninStruct)
 		Authenticationservice()
 		collection := client.Database("MedCard").Collection("users")
-		if ID != "" {
 
+		// ? =================
+
+		if ID != "" {
+			// ! this is used for validating is user exist in DB berof profile change 
 			if permission == "client" {
 				fmt.Printf("permission: id %v %v\n", permission, ID)
 				err := collection.FindOne(ctx, bson.M{"_id": ID, "permissions": permission}).Decode(&DecodedSigninStruct)
 				if err != nil {
-					c.JSON(202, gin.H{
-						"Code": "User not Found",
-					})
+					// c.JSON(202, gin.H{
+					// 	"Code": "User not Found1.1",
+					// })
 					fmt.Printf("err client find: %v\n", err)
 				}
 			} else {
 				err := collection.FindOne(ctx, bson.M{"_id": ID, "permissions": permission}).Decode(&DecodedSigninStruct)
 				if err != nil {
 					fmt.Printf("err else find: %v\n", err)
-					c.JSON(202, gin.H{
-						"Code": "User not Found",
-					})
+					// c.JSON(202, gin.H{
+					// 	"Code": "User not Found1.2",
+					// })
 				}
 			}
-			log.Println("ss")
+			// log.Println("ss")
 		} else {
-
+			// ! 
+			fmt.Printf("ID: %v\n", ID)
 			if permission == "client" {
-				err := collection.FindOne(ctx, bson.M{"_id": ID, "permissions": permission}).Decode(&DecodedSigninStruct)
+				// err := collection.FindOne(ctx, bson.M{"_id": ID, "permissions": permission}).Decode(&DecodedSigninStruct)
+				err := collection.FindOne(ctx, bson.M{"name": SigninStruct.Name, "surname": SigninStruct.Surname, "permissions": permission}).Decode(&DecodedSigninStruct)
 				if err != nil {
-					c.JSON(202, gin.H{
-						"Code": "User not Found",
-					})
+					// c.JSON(202, gin.H{
+					// 	"Code": "User not Found 1/1",
+					// })
+					fmt.Printf("Error find user 1/1")
 				}
 			} else {
 				err := collection.FindOne(ctx, bson.M{"name": SigninStruct.Name, "surname": SigninStruct.Surname, "permissions": permission}).Decode(&DecodedSigninStruct)
 				if err != nil {
-					c.JSON(202, gin.H{
-						"Code": "User not Found",
-					})
+					// c.JSON(202, gin.H{
+						// "Code": "User not Found 1/2",
+					// })
+					fmt.Printf("Error find user 1/2")
+
 				}
 			}
 
 			log.Println("err")
 		}
+
+		// ? =================
+		// ! Validate user by name and sername 
 		if DecodedSigninStruct.Name == "" {
+			// ! Validate the phone
 			collection.FindOne(ctx, bson.M{"phone": SigninStruct.Phone}).Decode(&DecodedSigninStruct)
 			if DecodedSigninStruct.Name == "" {
 				IsPassedDB = true
@@ -155,10 +168,9 @@ func TestTheStruct(c *gin.Context, Required string, valueStruct string, options 
 				})
 			}
 		} else {
-			c.JSON(202, gin.H{
-				"Code": "Error User already exist",
-			})
+			fmt.Println("Use exsist")
 		}
+
 	}
 	// """"""""""""""""""""""DB FOR EXISTENCE CHECKER""""""""""""""""""""""""""
 

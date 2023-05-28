@@ -137,6 +137,10 @@ func Signup(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"Code": "Succeded",
 		})
+	}else if checkPointTwo == false {
+		c.JSON(304, gin.H{
+			"Code": "Error User already exist",
+		})
 	}
 }
 func Signout(c *gin.Context) {
@@ -236,5 +240,9 @@ func SignupDoctor(c *gin.Context) {
 		// 	Position: "jfdfdd",
 		//   })
 		collection.InsertOne(ctx, SignupDoctor)
+	}else if checkPointTwo == false {
+		c.JSON(302, gin.H{
+			"Code": "Error User already exist",
+		})	
 	}
 }

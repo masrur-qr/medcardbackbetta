@@ -156,6 +156,10 @@ func ProfileChange(c *gin.Context) {
 			c.JSON(200, gin.H{
 				"Code": "Your Request Successfully Handeled",
 			})
+		}else if checkPointTwo == false {
+			c.JSON(304, gin.H{
+				"Code": "User not Found1.2",
+			})
 		}
 	} else if CookieData.Permissions == "doctor" {
 		var ChangeStruct structures.SignupDoctor
@@ -204,6 +208,10 @@ func ProfileChange(c *gin.Context) {
 			c.JSON(200, gin.H{
 				"Code": "Your Request Successfully Handeled",
 			})
+		}else if checkPointTwo == false {
+			c.JSON(304, gin.H{
+				"Code": "User not Found1.2",
+			})
 		}
 	} else if CookieData.Permissions == "client" {
 		var ChangeStruct structures.Signup
@@ -242,6 +250,10 @@ func ProfileChange(c *gin.Context) {
 			// log.Printf("cur",cur)
 			c.JSON(200, gin.H{
 				"Code": "Your Request Successfully Handeled",
+			})
+		}else if checkPointTwo == false {
+			c.JSON(304, gin.H{
+				"Code": "User not Found1.2",
 			})
 		}
 	}
