@@ -70,7 +70,7 @@ func DoctorClientForView(c *gin.Context) {
 		Date := strings.Split(splitedDate[2], ";")[0]
 		Hour, _ := strconv.Atoi(splitedTime[0])
 		Minute := splitedTime[1]
-		dateZoneFormat = fmt.Sprintf("%v-0%v-%vT%v:%v:%v.%vZ", Year, Month, Date, Hour, Minute, "00", "050")
+		dateZoneFormat = fmt.Sprintf("%v-0%v-%vT%v:%v:%v+%v", Year, Month, Date, Hour, Minute, "00", "05:00")
 	}
 
 	// """"""""""""""""""""""""""""""""""DB CONNECTION""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -94,7 +94,7 @@ func DoctorClientForView(c *gin.Context) {
 			ViewStruct.Id = premetivid
 			ViewStruct.ClientFLSname = fmt.Sprintf("%v %v", DoctorDecodeUser.Surname, DoctorDecodeUser.Name)
 			ViewStruct.ClientId = CookieData.Id
-			ViewStruct.DoctorFLSname =  DoctorDecode.Surname+ " " + DoctorDecode.Name
+			ViewStruct.DoctorFLSname = DoctorDecode.Surname + " " + DoctorDecode.Name
 			ViewStruct.Date = ""
 			_, err := collection.InsertOne(ctx, ViewStruct)
 			if err != nil {
@@ -151,7 +151,7 @@ func DoctorClientForView(c *gin.Context) {
 		if isPassedFields == true && ViewStructDecode.Sickness == "" {
 			premetivid := primitive.NewObjectID().Hex()
 			ViewStruct.Id = premetivid
-			ViewStruct.ClientFLSname = fmt.Sprintf("%v %v", DoctorDecodeUser.Surname,DoctorDecodeUser.Name )
+			ViewStruct.ClientFLSname = fmt.Sprintf("%v %v", DoctorDecodeUser.Surname, DoctorDecodeUser.Name)
 			ViewStruct.DoctorFLSname = DoctorDecode.Surname + " " + DoctorDecode.Name
 			ViewStruct.Date = dateZoneFormat
 			_, err := collection.InsertOne(ctx, ViewStruct)
@@ -185,45 +185,60 @@ func removeViewsFromDB(id string) {
 	}
 	fmt.Println(timeParse.Day() - time.Now().Day())
 	// fmt.Println((timeParse.Day()-time.Now().Day()) * 1440)
+	// ? Time managment if it expired tomrrow or today
 	var MinutesForRm int
 	if time.Now().After(timeParse) == true {
 		MinutesForRm = ((((timeParse.Hour() - time.Now().Hour()) * 60) + (timeParse.Minute() - time.Now().Minute())) + 1)
-		fmt.Printf("Access will be denied after %v minutes",MinutesForRm)
+		fmt.Printf("Access will be denied after %v minutes", MinutesForRm)
 	} else {
 		if timeParse.Day() == time.Now().Day() {
 			MinutesForRm = ((((timeParse.Hour() - time.Now().Hour()) * 60) + (timeParse.Minute() - time.Now().Minute())) + 1)
-			fmt.Printf("Access will be denied after %v minutes",MinutesForRm)
-		}else{
+			fmt.Printf("Access will be denied after %v minutes", MinutesForRm)
+		} else {
 			MinutesForRm = ((((timeParse.Hour()) * 60) + (time.Now().Minute())) + 1) + (timeParse.Day()-time.Now().Day())*1440
-			fmt.Printf("Access will be denied after %v minutes",MinutesForRm)
+			fmt.Printf("Access will be denied after %v minutes", MinutesForRm)
 		}
 	}
-
+	// ? Set deley after which delete remove access for view
 	if DecodedViews.Date != "" {
 		select {
 		case <-time.After(time.Duration(MinutesForRm) * time.Minute):
 			var (
 				DecodedViewsForArchive structures.Views
 			)
+			//? Create time new zone  forat rf3399 2023-05-28T17:23:00+05:00
+			offsetTime := time.FixedZone("Tajikistan", 5*3600)
+			now := time.Now().In(offsetTime)
+			// ? Get the data from DB
 			conn.FindOne(ctx, bson.M{"_id": id}).Decode(&DecodedViewsForArchive)
+			// *
+			parseTimeFromDb, _ := time.Parse(time.RFC3339, DecodedViewsForArchive.Date)
+			// ? validate access data
+			if now.After(parseTimeFromDb) {
+				connArch := client.Database("MedCard").Collection("viewsarchive")
+				connArch.InsertOne(ctx, DecodedViewsForArchive)
 
-			connArch := client.Database("MedCard").Collection("viewsarchive")
-			connArch.InsertOne(ctx, DecodedViewsForArchive)
+				conn.DeleteOne(ctx, bson.M{"_id": id})
+				fmt.Println("User  access has been removed removed")
+			} else {
+				fmt.Println("Access time has been changed")
+			}
 
-			conn.DeleteOne(ctx, bson.M{"_id": id})
-			fmt.Println("User removed")
 		}
 
 	} else {
-		fmt.Println("no date")
+		fmt.Println("No date")
 	}
 }
 
 // bypass with potsman
 func AddFilesToEhr(c *gin.Context) {
 	var (
-		FilesStruct structures.File
+		FilesStruct  structures.File
+		DecodeClient structures.Signup
+		DecodeViews  structures.Views
 	)
+	CookieData := jwtgen.Velidation(c)
 	stringJSON := c.Request.FormValue("json")
 	files, handler, errIMG := c.Request.FormFile("img")
 	// """""""""""""""""""""""check The file on existense"""""""""""""""""""""""
@@ -243,16 +258,41 @@ func AddFilesToEhr(c *gin.Context) {
 	// """"""""""""""""""""""""""""""""""DB CONNECTION""""""""""""""""""""""""""""""""""""""""""""""""""""
 	Authenticationservice()
 	collection := client.Database("MedCard").Collection("ehrfiles")
+	collectionUsers := client.Database("MedCard").Collection("users")
+	collectionUsers.FindOne(ctx, bson.M{"_id": CookieData.Id}).Decode(&DecodeClient)
+	collectionviews := client.Database("MedCard").Collection("views")
 	// """"""""""""""""""""""""""""""""""DB CONNECTION""""""""""""""""""""""""""""""""""""""""""""""""""""
 	isPassedFields, _ := velidation.TestTheStruct(c, "clientFLSname:clientid:doctorid:description:doctorFLSname:title", string(jsStr), "FieldsCheck:true,DBCheck:false", "", "")
 	if isPassedFields == true {
-		premetivid := primitive.NewObjectID().Hex()
-		FilesStruct.Id = premetivid
-		FilesStruct.ImgUrl = handlefile.Handlefile(c, "./static/uploadfille")
-		collection.InsertOne(ctx, FilesStruct)
-		c.JSON(200, gin.H{
-			"Code": "Request Seccessfully Handleed",
-		})
+		// """""""""""""""""""""""""Check Access if client do else check views for access"""""""""""""""""""""""""""""""""""""""
+		if CookieData.Permissions == "client" && FilesStruct.ClientId == CookieData.Id {
+			premetivid := primitive.NewObjectID().Hex()
+			FilesStruct.Id = premetivid
+			FilesStruct.ImgUrl = handlefile.Handlefile(c, "./static/uploadfille")
+			collection.InsertOne(ctx, FilesStruct)
+			c.JSON(200, gin.H{
+				"Code": "Request Seccessfully Handleed",
+			})
+		} else if CookieData.Permissions == "doctor" {
+			collectionviews.FindOne(ctx, bson.M{"doctorid": CookieData.Id, "clientid": FilesStruct.ClientId}).Decode(&DecodeViews)
+			if DecodeViews.Sickness != "" && DecodeViews.Date != "" {
+				premetivid := primitive.NewObjectID().Hex()
+				FilesStruct.Id = premetivid
+				FilesStruct.ImgUrl = handlefile.Handlefile(c, "./static/uploadfille")
+				collection.InsertOne(ctx, FilesStruct)
+				c.JSON(200, gin.H{
+					"Code": "Request Seccessfully Handleed",
+				})
+			}else{
+				c.JSON(400, gin.H{
+					"Code": "You havve no access to add file to that user",
+				})
+			}
+		} else {
+			c.JSON(400, gin.H{
+				"Code": "You cannot add file to this user",
+			})
+		}
 	}
 }
 func ExpiredLinks(c *gin.Context) {

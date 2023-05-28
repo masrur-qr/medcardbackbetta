@@ -443,7 +443,6 @@ func GetClient(c *gin.Context) {
 			})
 		}
 	} else if CookieData.Permissions == "doctor" {
-		fmt.Println("test adminasdsad")
 		fmt.Println(c.Request.URL.RawQuery)
 
 		var (
@@ -457,8 +456,14 @@ func GetClient(c *gin.Context) {
 		}
 		collectionCli := client.Database("MedCard").Collection("users")
 		err = collectionCli.FindOne(ctxForAccess, bson.M{"_id": c.Request.URL.RawQuery}).Decode(&ClientsDB)
-		if DecodeViews.DoctorId == CookieData.Id && ClientsDB.Permissions != "doctor" {
-			// ? ========================================== get Client data ============================
+		// ? ================================== Get doctor data ==========================
+		err = collectionCli.FindOne(ctx, bson.M{"_id": CookieData.Id}).Decode(&DoctorDB)
+		if err != nil {
+			log.Printf("Err find user %v\n", err)
+		}
+		// ? ========== Validate if it this doctor has beed set data and has access to views ===========
+		if DecodeViews.DoctorId == CookieData.Id && ClientsDB.Permissions != "doctor" && DecodeViews.Date != "" {
+			// ? ===============get Client data ClientsDB taken priveously is also wil be sended  ===========
 			Authenticationservice()
 
 			collectionView := client.Database("MedCard").Collection("ehrfiles")
@@ -476,13 +481,8 @@ func GetClient(c *gin.Context) {
 				log.Printf("Err find user %v\n", err)
 			}
 			// ? ================================== Get doctor data ==========================
-			Authenticationservice()
-			collection := client.Database("MedCard").Collection("users")
-			err = collection.FindOne(ctx, bson.M{"_id": CookieData.Id}).Decode(&DoctorDB)
 
-			if err != nil {
-				log.Printf("Err find user %v\n", err)
-			}
+			
 			if DoctorDB.Name != "" {
 				log.Println(c.Request.URL.RawQuery)
 				DoctorDB.Password = "null"
@@ -498,9 +498,9 @@ func GetClient(c *gin.Context) {
 				})
 			}
 		} else {
-			ClientsDB.Password = "null"
+			DoctorDB.Password = "null"
 			c.JSON(200, gin.H{
-				"UserJson": ClientsDB,
+				"UserJson": DoctorDB ,
 			})
 		}
 	}
