@@ -376,6 +376,7 @@ func GetClient(c *gin.Context) {
 		ClientsDB structures.Signup
 		DoctorDB  structures.SignupDoctor
 		Files     structures.File
+		AdminDecode structures.Admin
 	)
 	// ==================== Cookie validation =========================
 	CookieData := jwtgen.Velidation(c)
@@ -383,7 +384,7 @@ func GetClient(c *gin.Context) {
 	log.Println(CookieData.Permissions)
 
 	if CookieData.Permissions == "client" {
-		fmt.Println("test admin")
+		fmt.Println("test client")
 
 		Authenticationservice()
 		collection := client.Database("MedCard").Collection("users")
@@ -427,21 +428,42 @@ func GetClient(c *gin.Context) {
 	}else if CookieData.Permissions == "admin" {
 		Authenticationservice()
 		collection := client.Database("MedCard").Collection("users")
-		collection.FindOne(ctx, bson.M{"_id": CookieData.Id}).Decode(&ClientsDB)
+		collection.FindOne(ctx, bson.M{"_id": c.Request.URL.RawQuery }).Decode(&ClientsDB)
+		collection.FindOne(ctx, bson.M{"_id": CookieData.Id}).Decode(&AdminDecode)
 		fmt.Println("test admin")
+		fmt.Printf("AdminDecode: %v\n", AdminDecode)
+		log.Println(c.Request.URL.RawQuery)
 
-		if ClientsDB.Name != "" {
-			log.Println(c.Request.URL.RawQuery)
-			ClientsDB.Password = "null"
-			c.JSON(200, gin.H{
-				"Code": "Request Handeled",
-				"Json": ClientsDB,
-			})
-		} else {
-			c.JSON(400, gin.H{
-				"Code": "User NotFound",
-			})
+		if AdminDecode.Permissions == "admin" && ClientsDB.Lastname != ""{
+			fmt.Printf("ClientsDB: %v\n", ClientsDB)
+			if ClientsDB.Name != "" {
+				log.Println(c.Request.URL.RawQuery)
+				ClientsDB.Password = "null"
+				c.JSON(200, gin.H{
+					"Code": "Request Handeled",
+					"Json": ClientsDB,
+				})
+			} else {
+				c.JSON(400, gin.H{
+					"Code": "User NotFound",
+				})
+			}
+		}else if AdminDecode.Permissions == "admin" && c.Request.URL.RawQuery == "" {
+			fmt.Println("dede")
+			if AdminDecode.Name != "" {
+				log.Println(c.Request.URL.RawQuery)
+				AdminDecode.Password = "null"
+				c.JSON(200, gin.H{
+					"Code": "Request Handeled",
+					"Json": AdminDecode,
+				})
+			} else {
+				c.JSON(400, gin.H{
+					"Code": "User NotFound",
+				})
+			}
 		}
+		
 	} else if CookieData.Permissions == "doctor" {
 		fmt.Println(c.Request.URL.RawQuery)
 
