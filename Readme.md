@@ -16,11 +16,11 @@
 
 Here're some of the project's best features:
 
-*   sadasd
-*   asdasd
-*   asdas
-*   asdas
-*   asdasd
+*   User Panel
+*   Landing pages
+*   Doctor Panel
+*   Admin || reception Panel
+*   Asignment to the doctor
 
 <h2>🛠️ Installation Steps:</h2>
 
@@ -66,7 +66,3 @@ Technologies used in the project:
 <h2>🛡️ License:</h2>
 
 This project is licensed under the Some license which we don't have
-
-<h2>💖Like my work?</h2>
-
-As we have no support lets say i am the sponsor of this app<p>https://ehr.medcard.space</p>
