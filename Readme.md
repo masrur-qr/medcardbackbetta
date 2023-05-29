@@ -1,7 +1,7 @@
 # Electronic Medical Health Record
 
 This is a project that I created to do something.
-[link text](https://www.example.com "Link title") `{color: #FF0000}`
+[link text](https://www.example.com "Link title"){color: #FF0000}
 
 ## Features
 
