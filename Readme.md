@@ -2,6 +2,7 @@
 
 This is a project that I created to do something.
 [link text](https://www.example.com "Link title"){color: #FF0000}
+![Image alt text](https://www.example.com/image.png)
 
 ## Features
 
