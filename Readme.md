@@ -1,6 +1,6 @@
 <h1 align="center" id="title">Electronic Medical Health Record</h1>
 
-<p align="center"><img src="[https://socialify.git.ci/masrur2022/MedCardv1.1/image?font=Source%20Code%20Pro&amp;language=1&amp;logo=https%3A%2F%2Fehrback.medcard.space%2Fstatic%2Fuploadfille%2Fupload-4177444200.jpg&amp;name=1&amp;pattern=Signal&amp;stargazers=1&amp;theme=Dark](https://socialify.git.ci/masrur2022/MedCard/image?font=Rokkitt&forks=1&language=1&logo=https%3A%2F%2Fehrback.medcard.space%2Fstatic%2Fuploadfille%2Fupload-4177444200.jpg&name=1&stargazers=1&theme=Dark)" alt="project-image"></p>
+<p align="center"><img src="[https://socialify.git.ci/masrur2022/MedCard/image?font=Rokkitt&forks=1&language=1&logo=https%3A%2F%2Fehrback.medcard.space%2Fstatic%2Fuploadfille%2Fupload-4177444200.jpg&name=1&stargazers=1&theme=Dark]" alt="project-image"></p>
 
 <p id="description">The electronic medical record is designed to ensure the continuity of medical care between medical organizations is aimed at improving the completeness and quality of information owned by a medical worker when providing medical care to a patient and will serve as a data source for electronic services in the patient's personal account.</p>
 
