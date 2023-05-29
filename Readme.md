@@ -1,10 +1,11 @@
-# My Project
+# Electronic Medical Health Record
 
 This is a project that I created to do something.
+[link text](https://www.example.com "Link title") `{color: #FF0000}`
 
 ## Features
 
-* Feature 1
+* It allows 
 * Feature 2
 * Feature 3
 
@@ -12,8 +13,13 @@ This is a project that I created to do something.
 
 To use this project, follow these steps:
 
-1. Step 1
+1. Clone the repository into your PC by
 2. Step 2
+3. Step 3
+3. Step 3
+3. Step 3
+3. Step 3
+3. Step 3
 3. Step 3
 
 ## Documentation
