@@ -1,8 +1,10 @@
-<h1 align="center" id="title">Medcard</h1>
+<h1 align="center" id="title">Electronic Medical Health Record</h1>
 
-<p align="center"><img src="" alt="project-image"></p>
+<p align="center"><img src="https://socialify.git.ci/masrur2022/MedCardv1.1/image?font=Source%20Code%20Pro&amp;language=1&amp;logo=https%3A%2F%2Fehrback.medcard.space%2Fstatic%2Fuploadfille%2Fupload-1718260545.jpg&amp;name=1&amp;pattern=Signal&amp;stargazers=1&amp;theme=Dark" alt="project-image"></p>
 
-<p id="description">asadasdasdasdasdasdaasd</p>
+<p id="description">The electronic medical record is designed to ensure the continuity of medical care between medical organizations is aimed at improving the completeness and quality of information owned by a medical worker when providing medical care to a patient and will serve as a data source for electronic services in the patient's personal account.</p>
+
+<p align="center"><img src="https://img.shields.io/badge/Masrur-Passed-red" alt="shields"><img src="https://img.shields.io/static/v1?label=Masrur&amp;message=Done&amp;color=green" alt="shields"><img src="https://img.shields.io/badge/dynamic/yaml?color=red&amp;label=Masrur&amp;prefix=pref&amp;query=home&amp;suffix=suf&amp;url=https%3A%2F%2Fehrback.medcard.space%2Fstatic%2Fuploadfille%2Fupload-1718260545.jpg?style=for-the-badge&amp;logo=appveyor" alt="shields"></p>
 
 <h2>🚀 Demo</h2>
 
