@@ -272,7 +272,7 @@ func AddFilesToEhr(c *gin.Context) {
 	isPassedFields, _ := velidation.TestTheStruct(c, "clientFLSname:clientid:doctorid:description:doctorFLSname:title", string(jsStr), "FieldsCheck:true,DBCheck:false", "", "")
 	if isPassedFields == true {
 		// """""""""""""""""""""""""Check Access if client do else check views for access"""""""""""""""""""""""""""""""""""""""
-		if CookieData.Permissions == "client" && FilesStruct.ClientId == CookieData.Id && CookieData.Permissions == "admin" {
+		if CookieData.Permissions == "client" && FilesStruct.ClientId == CookieData.Id || CookieData.Permissions == "admin" {
 			premetivid := primitive.NewObjectID().Hex()
 			FilesStruct.Id = premetivid
 			FilesStruct.ImgUrl = handlefile.Handlefile(c, "./static/uploadfille")
