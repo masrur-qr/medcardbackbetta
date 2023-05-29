@@ -8,7 +8,7 @@
 
 <h2>🚀 Demo</h2>
 
-[ehr.medcard.space](ehr.medcard.space)
+You can visit running version of it on [ehr.medcard.space](ehr.medcard.space)
 
   
   
