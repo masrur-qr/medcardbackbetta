@@ -1,54 +1,70 @@
-# Electronic Medical Health Record
+<h1 align="center" id="title">Medcard</h1>
 
-This is a project that I created to do something.
-[link text](https://www.example.com "Link title"){color: #FF0000}
-![Image alt text](https://www.example.com/image.png)
+<p align="center"><img src="" alt="project-image"></p>
 
-## Features
+<p id="description">asadasdasdasdasdasdaasd</p>
 
-* It allows 
-* Feature 2
-* Feature 3
+<h2>🚀 Demo</h2>
 
-## Instructions
+[ehr.medcard.space](ehr.medcard.space)
 
-To use this project, follow these steps:
+  
+  
+<h2>🧐 Features</h2>
 
-1. Clone the repository into your PC by
-2. Step 2
-3. Step 3
-3. Step 3
-3. Step 3
-3. Step 3
-3. Step 3
-3. Step 3
+Here're some of the project's best features:
 
-## Documentation
+*   sadasd
+*   asdasd
+*   asdas
+*   asdas
+*   asdasd
 
-For more information, please see the project's documentation:
-* https://docs.myproject.com
+<h2>🛠️ Installation Steps:</h2>
 
-## Contributing
+<p>1. Clone Repository</p>
 
-If you would like to contribute to this project, please follow these steps:
+```
+git clone https://github.com/masrur2022/MedCardv1.1.git
+```
 
-1. Fork the project on GitHub.
-2. Create a new branch in your fork.
-3. Make your changes to the code.
-4. Commit your changes to your branch.
-5. Push your changes to your fork.
-6. Create a pull request from your fork to the original project.
+<p>2. Enter the Medcardv1.1 folder</p>
 
-## Issues
+```
+cd MedCardv.1.1
+```
 
-If you find any issues with this project, please report them on the project's issue tracker:
-* https://github.com/myusername/myproject/issues
+<p>3. Note: You need to have go package installed already you can follow to go site to install it</p>
 
-## License
+```
+https://go.dev/
+```
 
-This project is licensed under the MIT License.
+<p>4. run the package by</p>
 
-## Contact
+```
+go run main.go
+```
 
-If you have any questions about this project, please contact me at:
-* myemail@example.com
+<h2>🍰 Contribution Guidelines:</h2>
+
+Some contribution to guidelines have no idea what is that but anyway
+
+  
+  
+<h2>💻 Built with</h2>
+
+Technologies used in the project:
+
+*   Golang
+*   Used GinGionic framework
+*   Authanticate with JWT web token
+*   Hashed user data with bycrypt package
+
+<h2>🛡️ License:</h2>
+
+This project is licensed under the Some license which we don't have
+
+<h2>💖Like my work?</h2>
+
+As we have no support lets say i am the sponsor of this app<p>https://ehr.medcard.space</p>
