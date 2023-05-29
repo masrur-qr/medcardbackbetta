@@ -428,8 +428,19 @@ func GetClient(c *gin.Context) {
 	}else if CookieData.Permissions == "admin" {
 		Authenticationservice()
 		collection := client.Database("MedCard").Collection("users")
+		collectionFiles := client.Database("MedCard").Collection("ehrfiles")
 		collection.FindOne(ctx, bson.M{"_id": c.Request.URL.RawQuery }).Decode(&ClientsDB)
 		collection.FindOne(ctx, bson.M{"_id": CookieData.Id}).Decode(&AdminDecode)
+		cur,err := collectionFiles.Find(ctx,bson.M{"clientid":c.Request.URL.RawQuery,"doctorid":CookieData.Id})
+		if err != nil {
+			fmt.Printf("error get fies%v",err)
+		}
+		defer cur.Close(ctx)
+		var fiesArr []structures.File
+		for cur.Next(ctx) {
+			cur.Decode(&Files)
+			fiesArr = append(fiesArr, Files)
+		}
 		fmt.Println("test admin")
 		fmt.Printf("AdminDecode: %v\n", AdminDecode)
 		log.Println(c.Request.URL.RawQuery)
@@ -439,10 +450,19 @@ func GetClient(c *gin.Context) {
 			if ClientsDB.Name != "" {
 				log.Println(c.Request.URL.RawQuery)
 				ClientsDB.Password = "null"
-				c.JSON(200, gin.H{
-					"Code": "Request Handeled",
-					"Json": ClientsDB,
-				})
+				if len(fiesArr) != 0 {
+					c.JSON(200, gin.H{
+						"Code": "Request Handeled",
+						"Json": ClientsDB,
+						"Files": fiesArr,
+					})
+				}else{
+					c.JSON(200, gin.H{
+						"Code": "Request Handeled",
+						"Json": ClientsDB,
+						"Files": []string{},
+					})
+				}
 			} else {
 				c.JSON(400, gin.H{
 					"Code": "User NotFound",
@@ -463,7 +483,6 @@ func GetClient(c *gin.Context) {
 				})
 			}
 		}
-		
 	} else if CookieData.Permissions == "doctor" {
 		fmt.Println(c.Request.URL.RawQuery)
 
