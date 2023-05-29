@@ -79,7 +79,7 @@ func DoctorClientForView(c *gin.Context) {
 	collectionToDoc := client.Database("MedCard").Collection("users")
 
 	if CookieData.Permissions == "client" {
-		isPassedFields, _ := velidation.TestTheStruct(c, "doctorid:sickness:phone", string(stringJSON), "FieldsCheck:true,DBCheck:false", "", "")
+		isPassedFields, _ := velidation.TestTheStruct(c, "doctorid:sickness:clientphone", string(stringJSON), "FieldsCheck:true,DBCheck:false", "", "")
 
 		err := collection.FindOne(ctx, bson.M{"clientid": CookieData.Id, "doctorid": ViewStruct.DoctorId}).Decode(&ViewStructDecode)
 		if err != nil {
@@ -146,7 +146,7 @@ func DoctorClientForView(c *gin.Context) {
 			}
 		}
 	} else if CookieData.Permissions == "admin" {
-		isPassedFields, _ := velidation.TestTheStruct(c, "doctorid:date:clientid:sickness:phone", string(stringJSON), "FieldsCheck:true,DBCheck:false", "", "")
+		isPassedFields, _ := velidation.TestTheStruct(c, "doctorid:date:clientid:sickness:clientphone", string(stringJSON), "FieldsCheck:true,DBCheck:false", "", "")
 		// """"""""""""""""""""""""""""""""""DB CONNECTION""""""""""""""""""""""""""""""""""""""""""""""""""""
 		// Authenticationservice()
 		// collection := client.Database("MedCard").Collection("views")
