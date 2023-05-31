@@ -457,13 +457,13 @@ func GetClient(c *gin.Context) {
 				if len(fiesArr) != 0 {
 					c.JSON(200, gin.H{
 						"Code": "Request Handeled",
-						"Json": ClientsDB,
+						"UserJson": ClientsDB,
 						"Files": fiesArr,
 					})
 				}else{
 					c.JSON(200, gin.H{
 						"Code": "Request Handeled",
-						"Json": ClientsDB,
+						"UserJson": ClientsDB,
 						"Files": []string{},
 					})
 				}
