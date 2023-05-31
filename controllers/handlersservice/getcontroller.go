@@ -60,7 +60,6 @@ func GetDoctors(c *gin.Context) {
 	var DoctorDbArr []structures.SignupDoctor
 	for cur.Next(ctx) {
 		cur.Decode(&DoctorDb)
-		fmt.Printf("DoctorDb.History: %v\n", DoctorDb.History)
 		if len(DoctorDb.History) == 0{
 			DoctorDb.History = []structures.History{}
 		}
