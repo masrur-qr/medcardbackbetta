@@ -237,7 +237,6 @@ func removeViewsFromDB(id string) {
 		fmt.Println("No date")
 	}
 }
-
 // bypass with potsman
 func AddFilesToEhr(c *gin.Context) {
 	var (
@@ -281,7 +280,10 @@ func AddFilesToEhr(c *gin.Context) {
 				"Code": "Request Seccessfully Handleed",
 			})
 		} else if CookieData.Permissions == "doctor" {
+			fmt.Printf("CookieData: %v\n", CookieData)
+			fmt.Printf("FilesStruct.ClientId: %v\n", FilesStruct.ClientId)
 			collectionviews.FindOne(ctx, bson.M{"doctorid": CookieData.Id, "clientid": FilesStruct.ClientId}).Decode(&DecodeViews)
+			fmt.Printf("DecodeViews: %v\n", DecodeViews)
 			if DecodeViews.Sickness != "" && DecodeViews.Date != "" {
 				premetivid := primitive.NewObjectID().Hex()
 				FilesStruct.Id = premetivid
