@@ -102,7 +102,7 @@ func Signup(c *gin.Context) {
 	Authenticationservice()
 	collection := client.Database("MedCard").Collection("users")
 	// """"""""""""""""""""""""""""""""""DB CONNECTION""""""""""""""""""""""""""""""""""""""""""""""""""""
-	checkPointOne, checkPointTwo := velidation.TestTheStruct(c, "phone:blood:password:email:name:surname:lastname:birth:gender:disabilaties:adress:workplace", string(valueStruct), "FieldsCheck:true,DBCheck:true", "client", "")
+	checkPointOne, checkPointTwo := velidation.TestTheStruct(c, "phone:blood:password:name:surname:lastname:birth:gender:disabilaties:adress:workplace", string(valueStruct), "FieldsCheck:true,DBCheck:true", "client", "")
 	log.Println(checkPoint)
 
 	if checkPointOne != false && strings.Split(SigninStruct.Password, ":")[len(strings.Split(SigninStruct.Password, ":"))-1] == "Create" {
@@ -222,7 +222,7 @@ func SignupDoctor(c *gin.Context) {
 	Authenticationservice()
 	collection := client.Database("MedCard").Collection("users")
 	// """"""""""""""""""""""""""""""""""DB CONNECTION""""""""""""""""""""""""""""""""""""""""""""""""""""
-	checkPointOne, checkPointTwo := velidation.TestTheStruct(c, "phone:password:email:name:surname:lastname:position", string(valueStruct), "FieldsCheck:true,DBCheck:true", "doctor", "")
+	checkPointOne, checkPointTwo := velidation.TestTheStruct(c, "phone:password:name:surname:lastname:position", string(valueStruct), "FieldsCheck:true,DBCheck:true", "doctor", "")
 	log.Println(checkPoint)
 
 	if checkPointOne != false && checkPointTwo != false {
