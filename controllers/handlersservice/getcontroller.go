@@ -142,8 +142,8 @@ func Statistics(c *gin.Context) {
 		}
 		// ======================================= Filter Users By Gender =====================================
 		var genders = []string{
-			"male",
-			"female",
+			"Мужской",
+			"Женский",
 		}
 		var countGender = make(map[string]int, 1)
 		for i := 0; i < len(genders); i++ {
