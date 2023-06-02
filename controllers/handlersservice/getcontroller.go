@@ -149,7 +149,7 @@ func Statistics(c *gin.Context) {
 		for i := 0; i < len(genders); i++ {
 			// ? Disabliaties
 			var StatisticUser []structures.Signup
-			cur, _ := collection.Find(ctx, bson.M{"disabilaties": genders[i]})
+			cur, _ := collection.Find(ctx, bson.M{"gender": genders[i]})
 			defer cur.Close(ctx)
 			for cur.Next(ctx) {
 				cur.Decode(&StatisticsUsers)
