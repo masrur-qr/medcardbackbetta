@@ -120,8 +120,8 @@ func DoctorClientForView(c *gin.Context) {
 		// ? Set new time and validate it if it is expired date
 		now := time.FixedZone("tajikistan", 5*3600)
 
-		dateZoneFormatParse , _:= time.Parse(time.RFC3339,dateZoneFormat) 
-		if ViewStructDecode.Sickness != "" && isPassedFields == true && time.Now().In(now).Before(dateZoneFormatParse){
+		dateZoneFormatParse, _ := time.Parse(time.RFC3339, dateZoneFormat)
+		if ViewStructDecode.Sickness != "" && isPassedFields == true && time.Now().In(now).Before(dateZoneFormatParse) {
 			collection.DeleteOne(ctx, bson.M{"clientid": ViewStruct.ClientId, "doctorid": ViewStruct.DoctorId})
 
 			ViewStructDecode.Date = dateZoneFormat
@@ -139,7 +139,7 @@ func DoctorClientForView(c *gin.Context) {
 				c.JSON(400, gin.H{
 					"Code": "Invalid date",
 				})
-			}else{
+			} else {
 				c.JSON(400, gin.H{
 					"Code": "Cannot Find the user",
 				})
@@ -188,6 +188,9 @@ func removeViewsFromDB(id string) {
 	conn := client.Database("MedCard").Collection("views")
 	conn.FindOne(ctx, bson.M{"_id": id}).Decode(&DecodedViews)
 
+	//? Create time new zone  forat rf3399 2023-05-28T17:23:00+05:00
+	offsetTime := time.FixedZone("Tajikistan", 5*3600)
+	now := time.Now().In(offsetTime)
 	//? Colc all time in second
 	timeParse, err := time.Parse(time.RFC3339, DecodedViews.Date)
 	if err != nil {
@@ -195,7 +198,7 @@ func removeViewsFromDB(id string) {
 	}
 	// ? Time managment if it expired tomrrow or today
 	var MinutesForRm int
-	if time.Now().After(timeParse) == true {
+	if now.After(timeParse) == true {
 		MinutesForRm = ((((timeParse.Hour() - time.Now().Hour()) * 60) + (timeParse.Minute() - time.Now().Minute())) + 1)
 		fmt.Printf("Access will be denied after %v minutes 1", MinutesForRm)
 	} else {
@@ -216,15 +219,12 @@ func removeViewsFromDB(id string) {
 			var (
 				DecodedViewsForArchive structures.Views
 			)
-			//? Create time new zone  forat rf3399 2023-05-28T17:23:00+05:00
-			offsetTime := time.FixedZone("Tajikistan", 5*3600)
-			now := time.Now().In(offsetTime)
 			// ? Get the data from DB
 			conn.FindOne(ctx, bson.M{"_id": id}).Decode(&DecodedViewsForArchive)
 			// *
 			parseTimeFromDb, _ := time.Parse(time.RFC3339, DecodedViewsForArchive.Date)
 			// ? validate access data
-		fmt.Println("Timer is set 3")
+			fmt.Println("Timer is set 3")
 			if now.After(parseTimeFromDb) {
 				connArch := client.Database("MedCard").Collection("viewsarchive")
 				connArch.InsertOne(ctx, DecodedViewsForArchive)
@@ -241,6 +241,7 @@ func removeViewsFromDB(id string) {
 		fmt.Println("No date")
 	}
 }
+
 // bypass with potsman
 func AddFilesToEhr(c *gin.Context) {
 	var (
@@ -296,7 +297,7 @@ func AddFilesToEhr(c *gin.Context) {
 				c.JSON(200, gin.H{
 					"Code": "Request Seccessfully Handleed",
 				})
-			}else{
+			} else {
 				c.JSON(400, gin.H{
 					"Code": "You havve no access to add file to that user",
 				})
