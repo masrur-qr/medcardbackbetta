@@ -206,8 +206,10 @@ func removeViewsFromDB(id string) {
 			fmt.Printf("Access will be denied after %v minutes", MinutesForRm)
 		}
 	}
+	fmt.Println("Timer is set 1")
 	// ? Set deley after which delete remove access for view
 	if DecodedViews.Date != "" {
+		fmt.Println("Timer is set 2")
 		select {
 		case <-time.After(time.Duration(MinutesForRm) * time.Minute):
 			var (
@@ -221,6 +223,7 @@ func removeViewsFromDB(id string) {
 			// *
 			parseTimeFromDb, _ := time.Parse(time.RFC3339, DecodedViewsForArchive.Date)
 			// ? validate access data
+		fmt.Println("Timer is set 3")
 			if now.After(parseTimeFromDb) {
 				connArch := client.Database("MedCard").Collection("viewsarchive")
 				connArch.InsertOne(ctx, DecodedViewsForArchive)
