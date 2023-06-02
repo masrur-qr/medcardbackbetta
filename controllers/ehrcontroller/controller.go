@@ -230,7 +230,9 @@ func removeViewsFromDB(id string) {
 			// ? validate access data
 			fmt.Println("Timer is set 3")
 			fmt.Printf("now.After(parseTimeFromDb): %v\n", now.After(parseTimeFromDb))
-			if now.After(parseTimeFromDb) == false {
+			fmt.Printf("parseTimeFromDb: %v\n", parseTimeFromDb)
+			fmt.Printf("now: %v\n", now)
+			if now.After(parseTimeFromDb) == true {
 				connArch := client.Database("MedCard").Collection("viewsarchive")
 				connArch.InsertOne(ctx, DecodedViewsForArchive)
 
