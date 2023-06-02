@@ -183,14 +183,14 @@ func removeViewsFromDB(id string) {
 		DecodedViews structures.Views
 	)
 	fmt.Println(id)
-	fmt.Println(time.Now())
 	Authenticationservice()
 	conn := client.Database("MedCard").Collection("views")
 	conn.FindOne(ctx, bson.M{"_id": id}).Decode(&DecodedViews)
-
+	
 	//? Create time new zone  forat rf3399 2023-05-28T17:23:00+05:00
 	offsetTime := time.FixedZone("Tajikistan", 5*3600)
 	now := time.Now().In(offsetTime)
+	fmt.Println(now)
 	//? Colc all time in second
 	timeParse, err := time.Parse(time.RFC3339, DecodedViews.Date)
 	if err != nil {
