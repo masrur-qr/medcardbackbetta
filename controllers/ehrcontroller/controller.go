@@ -199,15 +199,17 @@ func removeViewsFromDB(id string) {
 	// ? Time managment if it expired tomrrow or today
 	var MinutesForRm int
 	fmt.Printf("now.After(timeParse): %v\n", now.After(timeParse))
-	if now.After(timeParse) == true {
-		MinutesForRm = ((((timeParse.Hour() - time.Now().Hour()) * 60) + (timeParse.Minute() - time.Now().Minute())) + 1)
+	fmt.Println(((((timeParse.Hour()) * 60) + (now.Minute())) + 1) + (timeParse.Day()-now.Day())*1440)
+
+	if now.After(timeParse) == false {
+		MinutesForRm = ((((timeParse.Hour() - now.Hour()) * 60) + (timeParse.Minute() - now.Minute())) + 1)
 		fmt.Printf("Access will be denied after %v minutes 1", MinutesForRm)
 	} else {
-		if timeParse.Day() == time.Now().Day() {
-			MinutesForRm = ((((timeParse.Hour() - time.Now().Hour()) * 60) + (timeParse.Minute() - time.Now().Minute())) + 1)
+		if timeParse.Day() == now.Day() {
+			MinutesForRm = ((((timeParse.Hour() - now.Hour()) * 60) + (timeParse.Minute() - now.Minute())) + 1)
 			fmt.Printf("Access will be denied after %v minutes 2", MinutesForRm)
 		} else {
-			MinutesForRm = ((((timeParse.Hour()) * 60) + (time.Now().Minute())) + 1) + (timeParse.Day()-time.Now().Day())*1440
+			MinutesForRm = ((((timeParse.Hour()) * 60) + (now.Minute())) + 1) + (timeParse.Day()-now.Day())*1440
 			fmt.Printf("Access will be denied after %v minutes 3", MinutesForRm)
 		}
 	}
