@@ -53,7 +53,7 @@ func DoctorClientForView(c *gin.Context) {
 	)
 	c.ShouldBindJSON(&ViewStruct)
 	CookieData := jwtgen.Velidation(c)
-	fmt.Printf("ViewStruct: %v\n", ViewStruct)
+	// fmt.Printf("ViewStruct: %v\n", ViewStruct)
 
 	stringJSON, err := json.Marshal(ViewStruct)
 	if err != nil {
@@ -109,14 +109,12 @@ func DoctorClientForView(c *gin.Context) {
 	} else if CookieData.Permissions == "doctor" {
 		isPassedFields, _ := velidation.TestTheStruct(c, "clientid:doctorid:date", string(stringJSON), "FieldsCheck:true,DBCheck:false", "", "")
 		// """"""""""""""""""""""""""""""""""DB CONNECTION""""""""""""""""""""""""""""""""""""""""""""""""""""
-		// Authenticationservice()
-		// collection := client.Database("MedCard").Collection("views")
+
 		// """"""""""""""""""""""""""""""""""DB CONNECTION""""""""""""""""""""""""""""""""""""""""""""""""""""
 		err := collection.FindOne(ctx, bson.M{"clientid": ViewStruct.ClientId, "doctorid": ViewStruct.DoctorId}).Decode(&ViewStructDecode)
 		if err != nil {
 			log.Printf("Find ERR views%v\n", err)
 		}
-		// log.Printf("Insert ERR views%v\n", isPassedFields)
 		// ? Set new time and validate it if it is expired date
 		now := time.FixedZone("tajikistan", 5*3600)
 
@@ -198,7 +196,6 @@ func removeViewsFromDB(id string) {
 	}
 	// ? Time managment if it expired tomrrow or today
 	var MinutesForRm int
-	fmt.Printf("now.After(timeParse): %v\n", now.After(timeParse))
 	fmt.Println(((((timeParse.Hour() - now.Hour()) * 60) + (timeParse.Minute() - now.Minute())) + 1) + (timeParse.Day()-now.Day())*1440)
 
 	if now.After(timeParse) == false {
@@ -230,10 +227,6 @@ func removeViewsFromDB(id string) {
 			// ? validate access data
 			offsetTime := time.FixedZone("Tajikistan", 5*3600)
 			now := time.Now().In(offsetTime)
-			fmt.Println("Timer is set 3")
-			fmt.Printf("now.After(parseTimeFromDb): %v\n", now.After(parseTimeFromDb))
-			fmt.Printf("parseTimeFromDb: %v\n", parseTimeFromDb)
-			fmt.Printf("now: %v\n", now)
 			if now.After(parseTimeFromDb) == true {
 				connArch := client.Database("MedCard").Collection("viewsarchive")
 				connArch.InsertOne(ctx, DecodedViewsForArchive)
