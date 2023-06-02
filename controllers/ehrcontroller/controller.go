@@ -200,7 +200,7 @@ func removeViewsFromDB(id string) {
 	var MinutesForRm int
 	fmt.Printf("now.After(timeParse): %v\n", now.After(timeParse))
 	fmt.Printf("(timeParse.Day() - now.Day()): %v\n", (timeParse.Day() - now.Day()))
-	fmt.Println(((((timeParse.Hour() - now.Day()) * 60) + (timeParse.Hour() - now.Minute())) + 1) + (timeParse.Day()-now.Day())*1440)
+	fmt.Println(((((timeParse.Hour() - now.Hour()) * 60) + (timeParse.Minute() - now.Minute())) + 1) + (timeParse.Day()-now.Day())*1440)
 
 	if now.After(timeParse) == false {
 		MinutesForRm = ((((timeParse.Hour() - now.Hour()) * 60) + (timeParse.Minute() - now.Minute())) + 1)
