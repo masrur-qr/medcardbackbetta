@@ -183,6 +183,7 @@ func removeViewsFromDB(id string) {
 		DecodedViews structures.Views
 	)
 	fmt.Println(id)
+	fmt.Println(time.Now())
 	Authenticationservice()
 	conn := client.Database("MedCard").Collection("views")
 	conn.FindOne(ctx, bson.M{"_id": id}).Decode(&DecodedViews)
@@ -196,14 +197,14 @@ func removeViewsFromDB(id string) {
 	var MinutesForRm int
 	if time.Now().After(timeParse) == true {
 		MinutesForRm = ((((timeParse.Hour() - time.Now().Hour()) * 60) + (timeParse.Minute() - time.Now().Minute())) + 1)
-		fmt.Printf("Access will be denied after %v minutes", MinutesForRm)
+		fmt.Printf("Access will be denied after %v minutes 1", MinutesForRm)
 	} else {
 		if timeParse.Day() == time.Now().Day() {
 			MinutesForRm = ((((timeParse.Hour() - time.Now().Hour()) * 60) + (timeParse.Minute() - time.Now().Minute())) + 1)
-			fmt.Printf("Access will be denied after %v minutes", MinutesForRm)
+			fmt.Printf("Access will be denied after %v minutes 2", MinutesForRm)
 		} else {
 			MinutesForRm = ((((timeParse.Hour()) * 60) + (time.Now().Minute())) + 1) + (timeParse.Day()-time.Now().Day())*1440
-			fmt.Printf("Access will be denied after %v minutes", MinutesForRm)
+			fmt.Printf("Access will be denied after %v minutes 3", MinutesForRm)
 		}
 	}
 	fmt.Println("Timer is set 1")
