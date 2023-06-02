@@ -186,7 +186,7 @@ func removeViewsFromDB(id string) {
 	Authenticationservice()
 	conn := client.Database("MedCard").Collection("views")
 	conn.FindOne(ctx, bson.M{"_id": id}).Decode(&DecodedViews)
-	
+
 	//? Create time new zone  forat rf3399 2023-05-28T17:23:00+05:00
 	offsetTime := time.FixedZone("Tajikistan", 5*3600)
 	now := time.Now().In(offsetTime)
@@ -204,7 +204,7 @@ func removeViewsFromDB(id string) {
 	if now.After(timeParse) == false {
 		MinutesForRm = ((((timeParse.Hour() - now.Hour()) * 60) + (timeParse.Minute() - now.Minute())) + 1) + (timeParse.Day()-now.Day())*1440
 		fmt.Printf("Access will be denied after %v minutes 1", MinutesForRm)
-	} 
+	}
 	// else {
 	// 	if timeParse.Day() == now.Day() {
 	// 		MinutesForRm = ((((timeParse.Hour() - now.Hour()) * 60) + (timeParse.Minute() - now.Minute())) + 1)
@@ -228,6 +228,8 @@ func removeViewsFromDB(id string) {
 			// *
 			parseTimeFromDb, _ := time.Parse(time.RFC3339, DecodedViewsForArchive.Date)
 			// ? validate access data
+			offsetTime := time.FixedZone("Tajikistan", 5*3600)
+			now := time.Now().In(offsetTime)
 			fmt.Println("Timer is set 3")
 			fmt.Printf("now.After(parseTimeFromDb): %v\n", now.After(parseTimeFromDb))
 			fmt.Printf("parseTimeFromDb: %v\n", parseTimeFromDb)
