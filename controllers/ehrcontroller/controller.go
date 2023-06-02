@@ -199,21 +199,21 @@ func removeViewsFromDB(id string) {
 	// ? Time managment if it expired tomrrow or today
 	var MinutesForRm int
 	fmt.Printf("now.After(timeParse): %v\n", now.After(timeParse))
-	fmt.Printf("(timeParse.Day() - now.Day()): %v\n", (timeParse.Day() - now.Day()))
 	fmt.Println(((((timeParse.Hour() - now.Hour()) * 60) + (timeParse.Minute() - now.Minute())) + 1) + (timeParse.Day()-now.Day())*1440)
 
 	if now.After(timeParse) == false {
-		MinutesForRm = ((((timeParse.Hour() - now.Hour()) * 60) + (timeParse.Minute() - now.Minute())) + 1)
+		MinutesForRm = ((((timeParse.Hour() - now.Hour()) * 60) + (timeParse.Minute() - now.Minute())) + 1) + (timeParse.Day()-now.Day())*1440
 		fmt.Printf("Access will be denied after %v minutes 1", MinutesForRm)
-	} else {
-		if timeParse.Day() == now.Day() {
-			MinutesForRm = ((((timeParse.Hour() - now.Hour()) * 60) + (timeParse.Minute() - now.Minute())) + 1)
-			fmt.Printf("Access will be denied after %v minutes 2", MinutesForRm)
-		} else {
-			MinutesForRm = ((((timeParse.Hour()) * 60) + (now.Minute())) + 1) + (timeParse.Day()-now.Day())*1440
-			fmt.Printf("Access will be denied after %v minutes 3", MinutesForRm)
-		}
-	}
+	} 
+	// else {
+	// 	if timeParse.Day() == now.Day() {
+	// 		MinutesForRm = ((((timeParse.Hour() - now.Hour()) * 60) + (timeParse.Minute() - now.Minute())) + 1)
+	// 		fmt.Printf("Access will be denied after %v minutes 2", MinutesForRm)
+	// 	} else {
+	// 		MinutesForRm = ((((timeParse.Hour()) * 60) + (now.Minute())) + 1) + (timeParse.Day()-now.Day())*1440
+	// 		fmt.Printf("Access will be denied after %v minutes 3", MinutesForRm)
+	// 	}
+	// }
 	fmt.Println("Timer is set 1")
 	// ? Set deley after which delete remove access for view
 	if DecodedViews.Date != "" {
