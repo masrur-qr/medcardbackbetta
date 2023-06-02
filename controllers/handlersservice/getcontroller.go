@@ -180,11 +180,11 @@ func Statistics(c *gin.Context) {
 		}
 		// ======================================= All Users =====================================
 		c.JSON(200, gin.H{
-			"Code":           "Request Handeled",
-			"UsersAmount":    countUsers,
-			"Gender-Male":    countGender,
-			"Bloodes":        countBloodTypes,
-			"Disabliaties-1": counDisabilaties,
+			"Code":         "Request Handeled",
+			"UsersAmount":  countUsers,
+			"GenderMale":   countGender,
+			"Bloodes":      countBloodTypes,
+			"Disabliaties": counDisabilaties,
 		})
 	} else {
 		c.JSON(400, gin.H{
