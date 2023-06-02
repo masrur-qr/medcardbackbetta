@@ -60,7 +60,7 @@ func GetDoctors(c *gin.Context) {
 	var DoctorDbArr []structures.SignupDoctor
 	for cur.Next(ctx) {
 		cur.Decode(&DoctorDb)
-		if len(DoctorDb.History) == 0{
+		if len(DoctorDb.History) == 0 {
 			DoctorDb.History = []structures.History{}
 		}
 		DoctorDbArr = append(DoctorDbArr, DoctorDb)
@@ -81,7 +81,6 @@ func GetDoctors(c *gin.Context) {
 }
 func Statistics(c *gin.Context) {
 	var (
-		Statistics      structures.GlobeStruct
 		StatisticsUsers structures.Signup
 	)
 	// ==================== Cookie validation =========================
@@ -90,145 +89,102 @@ func Statistics(c *gin.Context) {
 	if CookieData.Permissions == "admin" {
 		Authenticationservice()
 		collection := client.Database("MedCard").Collection("users")
-		// ==================== List all users =========================
-		cur, err := collection.Find(ctx, bson.M{})
 
-		if err != nil {
-			log.Printf("Err find Question%v\n", err)
+		var usersAmount = []string{
+			"doctor",
+			"client",
+			"allUsers",
 		}
-		defer cur.Close(ctx)
 
-		var StatisticsArr []structures.GlobeStruct
-		for cur.Next(ctx) {
-			cur.Decode(&Statistics)
-			StatisticsArr = append(StatisticsArr, Statistics)
-			// log.Println(StatisticsArr)
-		}
-		// ==================== List all doctors =========================
-		curDoc, err := collection.Find(ctx, bson.M{"permissions": "doctor"})
+		var countUsers = make(map[string]int, 1)
 
-		if err != nil {
-			log.Printf("Err find Question%v\n", err)
-		}
-		defer curDoc.Close(ctx)
-
-		var StatisticsArrDoc []structures.GlobeStruct
-		for curDoc.Next(ctx) {
-			curDoc.Decode(&Statistics)
-			StatisticsArrDoc = append(StatisticsArrDoc, Statistics)
-			// log.Println(StatisticsArrDoc)
-		}
-		// ==================== List all doctors =========================
-		curCl, err := collection.Find(ctx, bson.M{"permissions": "client"})
-
-		if err != nil {
-			log.Printf("Err find Question%v\n", err)
-		}
-		defer curCl.Close(ctx)
-
-		var StatisticsArrCl []structures.GlobeStruct
-		for curCl.Next(ctx) {
-			curCl.Decode(&Statistics)
-			StatisticsArrCl = append(StatisticsArrCl, Statistics)
-			// log.Println(StatisticsArrCl)
+		for i := 0; i < len(usersAmount); i++ {
+			// ? Bloodes
+			if usersAmount[i] == "allUsers" {
+				countUsers[usersAmount[i]] = countUsers["client"] + countUsers["doctor"]
+			} else {
+				var StatisticUser []structures.Signup
+				cur, _ := collection.Find(ctx, bson.M{"permissions": usersAmount[i]})
+				defer cur.Close(ctx)
+				for cur.Next(ctx) {
+					cur.Decode(&StatisticsUsers)
+					StatisticUser = append(StatisticUser, StatisticsUsers)
+				}
+				countUsers[usersAmount[i]] = len(StatisticUser)
+			}
 		}
 		// ======================================= Filter Users By Blood =====================================
-		// ? Blood 1
-		var StatisticUserArrOne []structures.Signup
-		cur, _ = collection.Find(ctx, bson.M{"blood": "1"})
-		defer cur.Close(ctx)
-		for cur.Next(ctx) {
-			cur.Decode(&StatisticsUsers)
-			StatisticUserArrOne = append(StatisticUserArrOne, StatisticsUsers)
+
+		var BloodTypes = []string{
+			"I(0)+",
+			"II(A)+",
+			"III(B)+",
+			"IV(AB)+",
+			"I(0)-",
+			"II(A)-",
+			"III(B)-",
+			"IV(AB)-",
+			"Unknown",
 		}
-		// ? Blood 2
-		var StatisticUserArrTwo []structures.Signup
-		cur, _ = collection.Find(ctx, bson.M{"blood": "2"})
-		defer cur.Close(ctx)
-		for cur.Next(ctx) {
-			cur.Decode(&StatisticsUsers)
-			StatisticUserArrTwo = append(StatisticUserArrTwo, StatisticsUsers)
-		}
-		// ? Blood 3
-		var StatisticUserArrThree []structures.Signup
-		cur, _ = collection.Find(ctx, bson.M{"blood": "3"})
-		defer cur.Close(ctx)
-		for cur.Next(ctx) {
-			cur.Decode(&StatisticsUsers)
-			StatisticUserArrThree = append(StatisticUserArrThree, StatisticsUsers)
-		}
-		// ? Blood 4
-		var StatisticUserArrFour []structures.Signup
-		cur, _ = collection.Find(ctx, bson.M{"blood": "4"})
-		defer cur.Close(ctx)
-		for cur.Next(ctx) {
-			cur.Decode(&StatisticsUsers)
-			StatisticUserArrFour = append(StatisticUserArrFour, StatisticsUsers)
+
+		var countBloodTypes = make(map[string]int, 1)
+
+		for i := 0; i < len(BloodTypes); i++ {
+			// ? Bloodes
+			var StatisticUser []structures.Signup
+			cur, _ := collection.Find(ctx, bson.M{"blood": BloodTypes[i]})
+			defer cur.Close(ctx)
+			for cur.Next(ctx) {
+				cur.Decode(&StatisticsUsers)
+				StatisticUser = append(StatisticUser, StatisticsUsers)
+			}
+			countBloodTypes[BloodTypes[i]] = len(StatisticUser)
 		}
 		// ======================================= Filter Users By Gender =====================================
-		var StatisticUserArrGenderMale []structures.Signup
-		cur, _ = collection.Find(ctx, bson.M{"gender": "male"})
-		defer cur.Close(ctx)
-		for cur.Next(ctx) {
-			cur.Decode(&StatisticsUsers)
-			StatisticUserArrGenderMale = append(StatisticUserArrGenderMale, StatisticsUsers)
+		var genders = []string{
+			"male",
+			"female",
 		}
-		var StatisticUserArrGenderFemale []structures.Signup
-		cur, _ = collection.Find(ctx, bson.M{"gender": "female"})
-		defer cur.Close(ctx)
-		for cur.Next(ctx) {
-			cur.Decode(&StatisticsUsers)
-			StatisticUserArrGenderFemale = append(StatisticUserArrGenderFemale, StatisticsUsers)
+		var countGender = make(map[string]int, 1)
+		for i := 0; i < len(genders); i++ {
+			// ? Disabliaties
+			var StatisticUser []structures.Signup
+			cur, _ := collection.Find(ctx, bson.M{"disabilaties": genders[i]})
+			defer cur.Close(ctx)
+			for cur.Next(ctx) {
+				cur.Decode(&StatisticsUsers)
+				StatisticUser = append(StatisticUser, StatisticsUsers)
+			}
+			countGender[genders[i]] = len(StatisticUser)
 		}
 		// ======================================= Disabilaties =====================================
-		// ? Disabliaties 1
-		var StatisticUserArrAbilatiesOne []structures.Signup
-		cur, _ = collection.Find(ctx, bson.M{"blood": "1"})
-		defer cur.Close(ctx)
-		for cur.Next(ctx) {
-			cur.Decode(&StatisticsUsers)
-			StatisticUserArrAbilatiesOne = append(StatisticUserArrAbilatiesOne, StatisticsUsers)
+		var disabilaties = []string{
+			"1-й степени",
+			"2-й степени",
+			"3-й степени",
+			"Не имеется",
 		}
-		// ? Disabliaties 2
-		var StatisticUserArrAbilatiesTwo []structures.Signup
-		cur, _ = collection.Find(ctx, bson.M{"blood": "2"})
-		defer cur.Close(ctx)
-		for cur.Next(ctx) {
-			cur.Decode(&StatisticsUsers)
-			StatisticUserArrAbilatiesTwo = append(StatisticUserArrAbilatiesTwo, StatisticsUsers)
-		}
-		// ? Disabliaties 3
-		var StatisticUserArrAbilatiesThree []structures.Signup
-		cur, _ = collection.Find(ctx, bson.M{"blood": "3"})
-		defer cur.Close(ctx)
-		for cur.Next(ctx) {
-			cur.Decode(&StatisticsUsers)
-			StatisticUserArrAbilatiesThree = append(StatisticUserArrAbilatiesThree, StatisticsUsers)
-		}
-		// ? Disabliaties 4
-		var StatisticUserArrAbilatiesFour []structures.Signup
-		cur, _ = collection.Find(ctx, bson.M{"blood": "4"})
-		defer cur.Close(ctx)
-		for cur.Next(ctx) {
-			cur.Decode(&StatisticsUsers)
-			StatisticUserArrAbilatiesFour = append(StatisticUserArrAbilatiesFour, StatisticsUsers)
+
+		var counDisabilaties = make(map[string]int, 1)
+
+		for i := 0; i < len(disabilaties); i++ {
+			// ? Disabliaties
+			var StatisticUser []structures.Signup
+			cur, _ := collection.Find(ctx, bson.M{"disabilaties": disabilaties[i]})
+			defer cur.Close(ctx)
+			for cur.Next(ctx) {
+				cur.Decode(&StatisticsUsers)
+				StatisticUser = append(StatisticUser, StatisticsUsers)
+			}
+			counDisabilaties[disabilaties[i]] = len(StatisticUser)
 		}
 		// ======================================= All Users =====================================
 		c.JSON(200, gin.H{
-			"Code":              "Request Handeled",
-			"Users":             len(StatisticsArr) - 1,
-			"Doctors":           len(StatisticsArrDoc),
-			"Clients":           len(StatisticsArrCl),
-			"Blood-1":           len(StatisticUserArrOne),
-			"Blood-2":           len(StatisticUserArrTwo),
-			"Blood-3":           len(StatisticUserArrThree),
-			"Blood-4":           len(StatisticUserArrFour),
-			"Gender-Male":       len(StatisticUserArrGenderMale),
-			"Gender-Female":     len(StatisticUserArrGenderFemale),
-			"Disabliaties-1":    len(StatisticUserArrAbilatiesOne),
-			"Disabliaties-2":    len(StatisticUserArrAbilatiesTwo),
-			"Disabliaties-3":    len(StatisticUserArrAbilatiesThree),
-			"Disabliaties-None": len(StatisticUserArrAbilatiesFour),
+			"Code":           "Request Handeled",
+			"UsersAmount":    countUsers,
+			"Gender-Male":    countGender,
+			"Bloodes":        countBloodTypes,
+			"Disabliaties-1": counDisabilaties,
 		})
 	} else {
 		c.JSON(400, gin.H{
@@ -376,9 +332,9 @@ func ListViewsAdmin(c *gin.Context) {
 }
 func GetClient(c *gin.Context) {
 	var (
-		ClientsDB structures.Signup
-		DoctorDB  structures.SignupDoctor
-		Files     structures.File
+		ClientsDB   structures.Signup
+		DoctorDB    structures.SignupDoctor
+		Files       structures.File
 		AdminDecode structures.Admin
 	)
 	// ==================== Cookie validation =========================
@@ -428,15 +384,15 @@ func GetClient(c *gin.Context) {
 				"Code": "User NotFound",
 			})
 		}
-	}else if CookieData.Permissions == "admin" {
+	} else if CookieData.Permissions == "admin" {
 		Authenticationservice()
 		collection := client.Database("MedCard").Collection("users")
 		collectionFiles := client.Database("MedCard").Collection("ehrfiles")
-		collection.FindOne(ctx, bson.M{"_id": c.Request.URL.RawQuery }).Decode(&ClientsDB)
+		collection.FindOne(ctx, bson.M{"_id": c.Request.URL.RawQuery}).Decode(&ClientsDB)
 		collection.FindOne(ctx, bson.M{"_id": CookieData.Id}).Decode(&AdminDecode)
-		cur,err := collectionFiles.Find(ctx,bson.M{"clientid":c.Request.URL.RawQuery,"doctorid":CookieData.Id})
+		cur, err := collectionFiles.Find(ctx, bson.M{"clientid": c.Request.URL.RawQuery, "doctorid": CookieData.Id})
 		if err != nil {
-			fmt.Printf("error get fies%v",err)
+			fmt.Printf("error get fies%v", err)
 		}
 		defer cur.Close(ctx)
 		var fiesArr []structures.File
@@ -448,22 +404,22 @@ func GetClient(c *gin.Context) {
 		fmt.Printf("AdminDecode: %v\n", AdminDecode)
 		log.Println(c.Request.URL.RawQuery)
 
-		if AdminDecode.Permissions == "admin" && ClientsDB.Lastname != ""{
+		if AdminDecode.Permissions == "admin" && ClientsDB.Lastname != "" {
 			fmt.Printf("ClientsDB: %v\n", ClientsDB)
 			if ClientsDB.Name != "" {
 				log.Println(c.Request.URL.RawQuery)
 				ClientsDB.Password = "null"
 				if len(fiesArr) != 0 {
 					c.JSON(200, gin.H{
-						"Code": "Request Handeled",
+						"Code":     "Request Handeled",
 						"UserJson": ClientsDB,
-						"Files": fiesArr,
+						"Files":    fiesArr,
 					})
-				}else{
+				} else {
 					c.JSON(200, gin.H{
-						"Code": "Request Handeled",
+						"Code":     "Request Handeled",
 						"UserJson": ClientsDB,
-						"Files": []string{},
+						"Files":    []string{},
 					})
 				}
 			} else {
@@ -471,7 +427,7 @@ func GetClient(c *gin.Context) {
 					"Code": "User NotFound",
 				})
 			}
-		}else if AdminDecode.Permissions == "admin" && c.Request.URL.RawQuery == "" {
+		} else if AdminDecode.Permissions == "admin" && c.Request.URL.RawQuery == "" {
 			fmt.Println("dede")
 			if AdminDecode.Name != "" {
 				log.Println(c.Request.URL.RawQuery)
@@ -493,7 +449,7 @@ func GetClient(c *gin.Context) {
 			DecodeViews structures.Views
 		)
 		collectionViews := client.Database("MedCard").Collection("views")
-		ctxForAccess , _ := context.WithTimeout(context.Background(), 5*time.Second)
+		ctxForAccess, _ := context.WithTimeout(context.Background(), 5*time.Second)
 		err := collectionViews.FindOne(ctxForAccess, bson.M{"doctorid": CookieData.Id, "clientid": c.Request.URL.RawQuery}).Decode(&DecodeViews)
 		if err != nil {
 			fmt.Printf("err doc %v", err)
@@ -526,7 +482,6 @@ func GetClient(c *gin.Context) {
 			}
 			// ? ================================== Get doctor data ==========================
 
-			
 			if DoctorDB.Name != "" {
 				log.Println(c.Request.URL.RawQuery)
 				DoctorDB.Password = "null"
@@ -544,7 +499,7 @@ func GetClient(c *gin.Context) {
 		} else {
 			DoctorDB.Password = "null"
 			c.JSON(200, gin.H{
-				"UserJson": DoctorDB ,
+				"UserJson": DoctorDB,
 			})
 		}
 	}
