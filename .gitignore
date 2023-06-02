@@ -1,6 +1,6 @@
-./evtvariables
-evtvariables
-.evtvariables
+# ./evtvariables
+# evtvariables
+# .evtvariables
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
