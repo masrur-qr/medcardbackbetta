@@ -198,6 +198,7 @@ func removeViewsFromDB(id string) {
 	}
 	// ? Time managment if it expired tomrrow or today
 	var MinutesForRm int
+	fmt.Printf("now.After(timeParse): %v\n", now.After(timeParse))
 	if now.After(timeParse) == true {
 		MinutesForRm = ((((timeParse.Hour() - time.Now().Hour()) * 60) + (timeParse.Minute() - time.Now().Minute())) + 1)
 		fmt.Printf("Access will be denied after %v minutes 1", MinutesForRm)
