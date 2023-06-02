@@ -16,3 +16,4 @@ var Port = os.Getenv("PORT")
 func New()  {
 	fmt.Printf("Port: %v;IpUrl %v;DBUrl: %v;\n", Port,IpUrl,DBUrl)
 }
+// ? hi
