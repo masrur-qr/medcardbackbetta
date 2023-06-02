@@ -199,6 +199,7 @@ func removeViewsFromDB(id string) {
 	// ? Time managment if it expired tomrrow or today
 	var MinutesForRm int
 	fmt.Printf("now.After(timeParse): %v\n", now.After(timeParse))
+	fmt.Printf("(timeParse.Day() - now.Day()): %v\n", (timeParse.Day() - now.Day()))
 	fmt.Println(((((timeParse.Hour()) * 60) + (now.Minute())) + 1) + (timeParse.Day()-now.Day())*1440)
 
 	if now.After(timeParse) == false {
