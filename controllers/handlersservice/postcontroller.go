@@ -12,12 +12,6 @@ import (
 	"medcard-new/begening/evtvariables"
 	"medcard-new/begening/structures"
 	"os"
-
-	// "strings"
-
-	// "strings"
-
-	// "os"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -108,8 +102,6 @@ func ProfileChange(c *gin.Context) {
 	// """""""""""""""""""""bind the request data into structure"""""""""""""""""""""
 	json.Unmarshal([]byte(jsonFM), &ChangeStruct)
 	fmt.Printf("ChangeStruct: %v\n", ChangeStruct)
-	// ChangeStruct.ImgUrl = handlefile.Handlefile(c,"../../static/upload")
-
 	// """""""""""""""""""""bind the request data into structure"""""""""""""""""""""
 	json.Unmarshal([]byte(jsonFM), &ChangeStruct)
 	valueStruct, err := json.Marshal(ChangeStruct)
@@ -120,7 +112,6 @@ func ProfileChange(c *gin.Context) {
 	CookieData := jwtgen.Velidation(c)
 	Authenticationservice()
 	collection := client.Database("MedCard").Collection("users")
-	// collection.FindOne(ctx,)
 
 	if CookieData.Permissions == "admin" {
 		var ChangeStruct structures.Admin
@@ -163,19 +154,13 @@ func ProfileChange(c *gin.Context) {
 		}
 	} else if CookieData.Permissions == "doctor" {
 		var ChangeStruct structures.SignupDoctor
-		// var ChangeStructHistory structures.History
 		json.Unmarshal([]byte(jsonFM), &ChangeStruct)
-		// json.Unmarshal([]byte(jsonFM), &ChangeStructHistory)
-		// c.ShouldBindJSON(&ChangeStruct)
 		log.Printf("ds2%v\n", ChangeStruct)
-		// log.Printf("ds3%v\n", ChangeStructHistory)
-		checkPointOne, checkPointTwo := velidation.TestTheStruct(c, "phone:name:surname:lastname:position:adress:email", string(valueStruct), "FieldsCheck:true,DBCheck:true", "doctor", CookieData.Id)
-		log.Println(CheckpointPassed)
+		checkPointOne, checkPointTwo := velidation.TestTheProfileChange(string(valueStruct),CookieData.Id)
 		collection.FindOne(ctx, bson.M{"name": ChangeStruct.Name, "surname": ChangeStruct.Surname, "permissions": CookieData.Permissions}).Decode(&DecodedSigninStruct)
 
-		if checkPointOne != false && checkPointTwo == false {
+		if checkPointOne  && checkPointTwo  {
 			log.Printf("ds1%v\n", ChangeStruct)
-			// log.Printf("ds2%v\n", ChangeStructHistory)
 			ChangeStruct.Userid = CookieData.Id
 			ChangeStruct.Permissions = CookieData.Permissions
 			if ChangeStruct.Password == "" {

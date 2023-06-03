@@ -61,6 +61,25 @@ func TestTheQuestion(valueStr string) (bool, bool) {
 	fmt.Printf("Questions: %v\n", Questions.QuestionsAuthorName)
 	return isquestionExist, isFieldEmpty
 }
+func TestTheProfileChange(RequestBody string, UserId string) (bool, bool) {
+	var (
+		isFieldNotEmpty bool = false
+		isUserExist     bool = false
+		encodedDoctore  structures.SignupDoctor
+	)
+	json.Unmarshal([]byte(RequestBody), &encodedDoctore)
+
+	if encodedDoctore.Adress != "" && encodedDoctore.Biography != "" && encodedDoctore.Email != "" && encodedDoctore.Experience != "" && encodedDoctore.Lastname != "" && encodedDoctore.Name != "" && encodedDoctore.Phone != "" && encodedDoctore.Position != "" && encodedDoctore.Surname != "" {
+		isFieldNotEmpty = true
+		Authenticationservice()
+		conn := client.Database("MedCard").Collection("users")
+		conn.FindOne(ctx, bson.M{"_id": UserId}).Decode(&encodedDoctore)
+		if encodedDoctore.Name != "" {
+			isUserExist = true
+		}
+	}
+	return isFieldNotEmpty, isUserExist
+}
 
 func TestTheStruct(c *gin.Context, Required string, valueStruct string, options string, permission string, ID string) (bool, bool) {
 	var (
@@ -109,7 +128,7 @@ func TestTheStruct(c *gin.Context, Required string, valueStruct string, options 
 		// ? =================
 
 		if ID != "" {
-			// ! this is used for validating is user exist in DB berof profile change 
+			// ! this is used for validating is user exist in DB berof profile change
 			if permission == "client" {
 				fmt.Printf("permission: id %v %v\n", permission, ID)
 				err := collection.FindOne(ctx, bson.M{"_id": ID, "permissions": permission}).Decode(&DecodedSigninStruct)
@@ -130,7 +149,7 @@ func TestTheStruct(c *gin.Context, Required string, valueStruct string, options 
 			}
 			// log.Println("ss")
 		} else {
-			// ! 
+			// !
 			fmt.Printf("ID: %v\n", ID)
 			if permission == "client" {
 				// err := collection.FindOne(ctx, bson.M{"_id": ID, "permissions": permission}).Decode(&DecodedSigninStruct)
@@ -145,7 +164,7 @@ func TestTheStruct(c *gin.Context, Required string, valueStruct string, options 
 				err := collection.FindOne(ctx, bson.M{"name": SigninStruct.Name, "surname": SigninStruct.Surname, "permissions": permission}).Decode(&DecodedSigninStruct)
 				if err != nil {
 					// c.JSON(202, gin.H{
-						// "Code": "User not Found 1/2",
+					// "Code": "User not Found 1/2",
 					// })
 					fmt.Printf("Error find user 1/2")
 
@@ -156,17 +175,17 @@ func TestTheStruct(c *gin.Context, Required string, valueStruct string, options 
 		}
 
 		// ? =================
-		// ! Validate user by name and sername 
+		// ! Validate user by name and sername
 		if DecodedSigninStruct.Name == "" {
 			// ! Validate the phone
 			collection.FindOne(ctx, bson.M{"phone": SigninStruct.Phone}).Decode(&DecodedSigninStruct)
 			if DecodedSigninStruct.Name == "" {
 				IsPassedDB = true
-			} 
+			}
 			// else {
-				// c.JSON(404, gin.H{
-					// "Code": "Error this phone numbers are already taken",
-				// })
+			// c.JSON(404, gin.H{
+			// "Code": "Error this phone numbers are already taken",
+			// })
 			// }
 		} else {
 			fmt.Println("Use exsist")

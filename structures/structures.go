@@ -98,6 +98,7 @@ type GlobeStruct struct {
 	Surname      string `json:"surname"`
 	Lastname     string `json:"lastname"`
 	Birth        string `json:"birth"`
+	Experience  string `json:"experience"`
 	Gender       string `json:"gender"`
 	Disabilaties string `json:"disabilaties"`
 	Adress       string `json:"adress"`
