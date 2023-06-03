@@ -126,6 +126,17 @@ func Statistics(c *gin.Context) {
 			"IV(AB)-",
 			"Unknown",
 		}
+		var BloodTypesForFront = []string{
+			"fierstPosetive",
+			"secondPosetive",
+			"thirdPosetive",
+			"fourthPosetive",
+			"fierstNegative",
+			"secondNegative",
+			"thirdNegative",
+			"fourthNegative",
+			"Unknown",
+		}
 
 		var countBloodTypes = make(map[string]int, 1)
 
@@ -138,7 +149,7 @@ func Statistics(c *gin.Context) {
 				cur.Decode(&StatisticsUsers)
 				StatisticUser = append(StatisticUser, StatisticsUsers)
 			}
-			countBloodTypes[BloodTypes[i]] = len(StatisticUser)
+			countBloodTypes[BloodTypesForFront[i]] = len(StatisticUser)
 		}
 		// ======================================= Filter Users By Gender =====================================
 		var genders = []string{
@@ -159,10 +170,16 @@ func Statistics(c *gin.Context) {
 		}
 		// ======================================= Disabilaties =====================================
 		var disabilaties = []string{
-			"1-й-степени",
-			"2-й-степени",
-			"3-й-степени",
-			"Не-имеется",
+			"1-й степени",
+			"2-й степени",
+			"3-й степени",
+			"Не имеется",
+		}
+		var disabilatiesForFront = []string{
+			"first",
+			"second",
+			"third",
+			"None",
 		}
 
 		var counDisabilaties = make(map[string]int, 1)
@@ -176,7 +193,7 @@ func Statistics(c *gin.Context) {
 				cur.Decode(&StatisticsUsers)
 				StatisticUser = append(StatisticUser, StatisticsUsers)
 			}
-			counDisabilaties[disabilaties[i]] = len(StatisticUser)
+			counDisabilaties[disabilatiesForFront[i]] = len(StatisticUser)
 		}
 		// ======================================= All Users =====================================
 		c.JSON(200, gin.H{
