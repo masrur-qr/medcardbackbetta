@@ -4,7 +4,6 @@ import (
 	"medcard-new/begening/controllers/authenticationservice"
 	"medcard-new/begening/controllers/ehrcontroller"
 	controllers "medcard-new/begening/controllers/handlersservice"
-	"medcard-new/begening/evtvariables"
 
 	"github.com/gin-gonic/gin"
 )
@@ -38,6 +37,5 @@ func Handlers(){
 	r.GET("/listviews",controllers.ListViewsAdmin)
 
 	
-	evtvariables.New()
 	r.Run(":5500")
 }
