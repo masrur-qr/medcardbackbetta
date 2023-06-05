@@ -14,7 +14,6 @@ import (
 
 	"medcard-new/begening/evtvariables"
 	"medcard-new/begening/structures"
-	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -28,19 +27,15 @@ var (
 	ctx    context.Context
 	client *mongo.Client
 )
-var DB_Url string = os.Getenv("DBURL")
 
 func Authenticationservice() {
-	// clientOptions := options.Client().ApplyURI("mongodb://127.0.0.1:27017")
 	clientOptions := options.Client().ApplyURI(evtvariables.DBUrl)
-	// clientOptions := options.Client().ApplyURI("mongodb://mas:mas@34.148.119.65:27017")
 
 	clientG, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		log.Println("Mongo.connect() ERROR: ", err)
 	}
 	ctxG, _ := context.WithTimeout(context.Background(), 15*time.Minute)
-	// collection := client.Database("MedCard").Collection("users")
 	ctx = ctxG
 	client = clientG
 }
@@ -53,7 +48,6 @@ func DoctorClientForView(c *gin.Context) {
 	)
 	c.ShouldBindJSON(&ViewStruct)
 	CookieData := jwtgen.Velidation(c)
-	// fmt.Printf("ViewStruct: %v\n", ViewStruct)
 
 	stringJSON, err := json.Marshal(ViewStruct)
 	if err != nil {
@@ -85,11 +79,11 @@ func DoctorClientForView(c *gin.Context) {
 		if err != nil {
 			log.Printf("Find ERR views%v\n", err)
 		}
-		// """"""""""""""""""""""""""""""""""DB CONNECTION""""""""""""""""""""""""""""""""""""""""""""""""""""
 		// """""""""""""""""""""""""""""""""" Get Doctor""""""""""""""""""""""""""""""""""""""""""""""""""""
 		collectionToDoc.FindOne(ctx, bson.M{"_id": ViewStruct.DoctorId}).Decode(&DoctorDecode)
 		collectionToDoc.FindOne(ctx, bson.M{"_id": ViewStruct.ClientId}).Decode(&DoctorDecodeUser)
 		if isPassedFields == true && ViewStructDecode.Sickness == "" && DoctorDecode.Userid != "" && DoctorDecodeUser.Userid != "" {
+			// ? prepeare for inserting the data
 			premetivid := primitive.NewObjectID().Hex()
 			ViewStruct.Id = premetivid
 			ViewStruct.DoctorPhone = DoctorDecode.Phone
@@ -108,7 +102,6 @@ func DoctorClientForView(c *gin.Context) {
 		}
 	} else if CookieData.Permissions == "doctor" {
 		isPassedFields, _ := velidation.TestTheStruct(c, "clientid:doctorid:date", string(stringJSON), "FieldsCheck:true,DBCheck:false", "", "")
-		// """"""""""""""""""""""""""""""""""DB CONNECTION""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 		// """"""""""""""""""""""""""""""""""DB CONNECTION""""""""""""""""""""""""""""""""""""""""""""""""""""
 		err := collection.FindOne(ctx, bson.M{"clientid": ViewStruct.ClientId, "doctorid": ViewStruct.DoctorId}).Decode(&ViewStructDecode)
@@ -146,9 +139,6 @@ func DoctorClientForView(c *gin.Context) {
 	} else if CookieData.Permissions == "admin" {
 		isPassedFields, _ := velidation.TestTheStruct(c, "doctorid:date:clientid:sickness:clientphone", string(stringJSON), "FieldsCheck:true,DBCheck:false", "", "")
 		// """"""""""""""""""""""""""""""""""DB CONNECTION""""""""""""""""""""""""""""""""""""""""""""""""""""
-		// Authenticationservice()
-		// collection := client.Database("MedCard").Collection("views")
-		// """"""""""""""""""""""""""""""""""DB CONNECTION""""""""""""""""""""""""""""""""""""""""""""""""""""
 		err := collection.FindOne(ctx, bson.M{"clientid": ViewStruct.ClientId, "doctorid": ViewStruct.DoctorId}).Decode(&ViewStructDecode)
 		if err != nil {
 			log.Printf("Find ERR views%v\n", err)
@@ -157,6 +147,7 @@ func DoctorClientForView(c *gin.Context) {
 		collectionToDoc.FindOne(ctx, bson.M{"_id": ViewStruct.ClientId}).Decode(&DoctorDecodeUser)
 		fmt.Println(DoctorDecodeUser)
 		if isPassedFields == true && ViewStructDecode.Sickness == "" {
+			// ? prepeare for inserting the data
 			premetivid := primitive.NewObjectID().Hex()
 			ViewStruct.Id = premetivid
 			ViewStruct.DoctorPhone = DoctorDecode.Phone
@@ -180,7 +171,6 @@ func removeViewsFromDB(id string) {
 	var (
 		DecodedViews structures.Views
 	)
-	fmt.Println(id)
 	Authenticationservice()
 	conn := client.Database("MedCard").Collection("views")
 	conn.FindOne(ctx, bson.M{"_id": id}).Decode(&DecodedViews)
@@ -188,7 +178,6 @@ func removeViewsFromDB(id string) {
 	//? Create time new zone  forat rf3399 2023-05-28T17:23:00+05:00
 	offsetTime := time.FixedZone("Tajikistan", 5*3600)
 	now := time.Now().In(offsetTime)
-	fmt.Println(now)
 	//? Colc all time in second
 	timeParse, err := time.Parse(time.RFC3339, DecodedViews.Date)
 	if err != nil {
@@ -202,19 +191,8 @@ func removeViewsFromDB(id string) {
 		MinutesForRm = ((((timeParse.Hour() - now.Hour()) * 60) + (timeParse.Minute() - now.Minute())) + 1) + (timeParse.Day()-now.Day())*1440
 		fmt.Printf("Access will be denied after %v minutes 1", MinutesForRm)
 	}
-	// else {
-	// 	if timeParse.Day() == now.Day() {
-	// 		MinutesForRm = ((((timeParse.Hour() - now.Hour()) * 60) + (timeParse.Minute() - now.Minute())) + 1)
-	// 		fmt.Printf("Access will be denied after %v minutes 2", MinutesForRm)
-	// 	} else {
-	// 		MinutesForRm = ((((timeParse.Hour()) * 60) + (now.Minute())) + 1) + (timeParse.Day()-now.Day())*1440
-	// 		fmt.Printf("Access will be denied after %v minutes 3", MinutesForRm)
-	// 	}
-	// }
-	fmt.Println("Timer is set 1")
 	// ? Set deley after which delete remove access for view
 	if DecodedViews.Date != "" {
-		fmt.Println("Timer is set 2")
 		select {
 		case <-time.After(time.Duration(MinutesForRm) * time.Minute):
 			var (
@@ -244,7 +222,6 @@ func removeViewsFromDB(id string) {
 	}
 }
 
-// bypass with potsman
 func AddFilesToEhr(c *gin.Context) {
 	var (
 		FilesStruct  structures.File
@@ -253,7 +230,7 @@ func AddFilesToEhr(c *gin.Context) {
 	)
 	CookieData := jwtgen.Velidation(c)
 	stringJSON := c.Request.FormValue("json")
-	files, handler, errIMG := c.Request.FormFile("img")
+	files, _, errIMG := c.Request.FormFile("img")
 	// """""""""""""""""""""""check The file on existense"""""""""""""""""""""""
 	if errIMG != nil {
 		c.JSON(409, gin.H{
@@ -262,7 +239,6 @@ func AddFilesToEhr(c *gin.Context) {
 	}
 
 	files.Seek(23, 23)
-	log.Printf("File Name %s%v\n", handler.Filename, stringJSON)
 	json.Unmarshal([]byte(stringJSON), &FilesStruct)
 	jsStr, err := json.Marshal(FilesStruct)
 	if err != nil {
@@ -287,10 +263,7 @@ func AddFilesToEhr(c *gin.Context) {
 				"Code": "Request Seccessfully Handleed",
 			})
 		} else if CookieData.Permissions == "doctor" {
-			fmt.Printf("CookieData: %v\n", CookieData)
-			fmt.Printf("FilesStruct.ClientId: %v\n", FilesStruct.ClientId)
 			collectionviews.FindOne(ctx, bson.M{"doctorid": CookieData.Id, "clientid": FilesStruct.ClientId}).Decode(&DecodeViews)
-			fmt.Printf("DecodeViews: %v\n", DecodeViews)
 			if DecodeViews.Sickness != "" && DecodeViews.Date != "" {
 				premetivid := primitive.NewObjectID().Hex()
 				FilesStruct.Id = premetivid
@@ -311,6 +284,8 @@ func AddFilesToEhr(c *gin.Context) {
 		}
 	}
 }
+
+//! Make the file expired by colling after some time
 func ExpiredLinks(c *gin.Context) {
 	//! http://127.0.0.1:5500/link?client=6468f42e1b2b6c995ac8dfc8&id=345464489.jpg&type=client
 	typeOfFile := c.Request.URL.Query().Get("type")
@@ -332,6 +307,7 @@ func staticFiles(c *gin.Context, path string, id string) {
 		ehrfiles  structures.File
 		viewsList structures.Views
 	)
+	//?  If the id  does'nt exist that meanes that request is coming from owner of the file
 	if id != "" {
 		Authenticationservice()
 		conn := client.Database("MedCard").Collection("ehrfiles")
@@ -367,7 +343,6 @@ func staticFiles(c *gin.Context, path string, id string) {
 		}
 
 	} else {
-		fmt.Println("1.2")
 		http.ServeFile(c.Writer, c.Request, path+imgId)
 	}
 }

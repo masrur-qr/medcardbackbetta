@@ -31,15 +31,12 @@ var (
 var DB_Url string = os.Getenv("DBURL")
 
 func Authenticationservice() {
-	// clientOptions := options.Client().ApplyURI("mongodb://127.0.0.1:27017")
-	// clientOptions := options.Client().ApplyURI("mongodb://mas:mas@34.148.119.65:27017")
 	clientOptions := options.Client().ApplyURI(evtvariables.DBUrl)
 	clientG, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		log.Println("Mongo.connect() ERROR: ", err)
 	}
 	ctxG, _ := context.WithTimeout(context.Background(), 15*time.Minute)
-	// collection := client.Database("MedCard").Collection("users")
 	ctx = ctxG
 	client = clientG
 }
@@ -88,9 +85,7 @@ func Signin(c *gin.Context) {
 }
 func Signup(c *gin.Context) {
 	var (
-		//   DecodedSigninStruct structures.Signup
 		SigninStruct structures.Signup
-		checkPoint   bool
 	)
 	c.ShouldBindJSON(&SigninStruct)
 	log.Printf("Marshel Eror %v\n", SigninStruct)
@@ -103,10 +98,8 @@ func Signup(c *gin.Context) {
 	collection := client.Database("MedCard").Collection("users")
 	// """"""""""""""""""""""""""""""""""DB CONNECTION""""""""""""""""""""""""""""""""""""""""""""""""""""
 	checkPointOne, checkPointTwo := velidation.TestTheStruct(c, "phone:blood:password:name:surname:lastname:birth:gender:disabilaties:adress:workplace", string(valueStruct), "FieldsCheck:true,DBCheck:true", "client", "")
-	log.Println(checkPoint)
 
 	if checkPointOne != false && strings.Split(SigninStruct.Password, ":")[len(strings.Split(SigninStruct.Password, ":"))-1] == "Create" {
-		log.Println("adminpassed")
 		primitiveid := primitive.NewObjectID().Hex()
 		hashedPass, err := bycrypt.HashPassword(strings.Split(SigninStruct.Password, ":")[0])
 		log.Println(strings.Split(SigninStruct.Password, ":")[0])
@@ -116,7 +109,6 @@ func Signup(c *gin.Context) {
 		SigninStruct.Password = hashedPass
 		SigninStruct.Userid = primitiveid
 		SigninStruct.Permissions = "admin"
-		// SigninStruct.ImgUrl = handlefile.Handlefile(c,"./static/uploadUser")
 		collection.InsertOne(ctx, SigninStruct)
 		//------------------------------------ Send success-----------------------------------
 		c.JSON(200, gin.H{
@@ -131,7 +123,6 @@ func Signup(c *gin.Context) {
 		SigninStruct.Password = hashedPass
 		SigninStruct.Userid = primitiveid
 		SigninStruct.Permissions = "client"
-		// SigninStruct.ImgUrl = handlefile.Handlefile(c,"./static/uploadUser")
 		collection.InsertOne(ctx, SigninStruct)
 		//------------------------------------ Send success-----------------------------------
 		c.JSON(200, gin.H{
@@ -235,10 +226,7 @@ func SignupDoctor(c *gin.Context) {
 		SignupDoctor.Userid = primitiveid
 		SignupDoctor.Permissions = "doctor"
 		SignupDoctor.ImgUrl = handlefile.Handlefile(c, "./static/upload")
-		//   SignupDoctor.History = append(SignupDoctor.History, structures.History{
-		// 	Year: "2022-12",
-		// 	Position: "jfdfdd",
-		//   })
+	
 		collection.InsertOne(ctx, SignupDoctor)
 	}else if checkPointTwo == false {
 		c.JSON(304, gin.H{

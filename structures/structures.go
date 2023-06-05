@@ -85,7 +85,6 @@ type File struct {
 	ImgUrl        string `json:"imgurl"`
 }
 type GlobeStruct struct {
-	// Userid string`bson:"_id"`
 	QuestionsText       string `json:"questiontext"`
 	QuestionsTitle      string `json:"questiontitle"`
 	QuestionsAuthorName string `json:"questionauthorname"`
@@ -108,7 +107,6 @@ type GlobeStruct struct {
 	Position  string `json:"position"`
 	Biography string `json:"biography"`
 	ImgUrl    string `json:"imgurl"`
-	// History []History
 }
 type IpDB struct {
 	Id   string `bson:"ip"`

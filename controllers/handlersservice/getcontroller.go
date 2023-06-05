@@ -30,7 +30,6 @@ func GetQuestions(c *gin.Context) {
 	for cur.Next(ctx) {
 		cur.Decode(&QuestionsDb)
 		QuestionsDbArr = append(QuestionsDbArr, QuestionsDb)
-		// log.Println(QuestionsDbArr)
 	}
 	if len(QuestionsDbArr) == 0 {
 		c.JSON(200, gin.H{
@@ -64,7 +63,6 @@ func GetDoctors(c *gin.Context) {
 			DoctorDb.History = []structures.History{}
 		}
 		DoctorDbArr = append(DoctorDbArr, DoctorDb)
-		// log.Println(DoctorDbArr)
 	}
 
 	if len(DoctorDbArr) == 0 {
@@ -230,7 +228,6 @@ func GetClients(c *gin.Context) {
 		for cur.Next(ctx) {
 			cur.Decode(&ClientsDB)
 			ClientsDBArr = append(ClientsDBArr, ClientsDB)
-			// log.Println(ClientsDBArr)
 		}
 
 		if len(ClientsDBArr) == 0 {
@@ -360,8 +357,6 @@ func GetClient(c *gin.Context) {
 	log.Println(CookieData.Permissions)
 
 	if CookieData.Permissions == "client" {
-		fmt.Println("test client")
-
 		Authenticationservice()
 		collection := client.Database("MedCard").Collection("users")
 		err := collection.FindOne(ctx, bson.M{"_id": c.Request.URL.RawQuery}).Decode(&ClientsDB)
@@ -417,14 +412,10 @@ func GetClient(c *gin.Context) {
 			cur.Decode(&Files)
 			fiesArr = append(fiesArr, Files)
 		}
-		fmt.Println("test admin")
-		fmt.Printf("AdminDecode: %v\n", AdminDecode)
-		log.Println(c.Request.URL.RawQuery)
 
 		if AdminDecode.Permissions == "admin" && ClientsDB.Lastname != "" {
 			fmt.Printf("ClientsDB: %v\n", ClientsDB)
 			if ClientsDB.Name != "" {
-				log.Println(c.Request.URL.RawQuery)
 				ClientsDB.Password = "null"
 				if len(fiesArr) != 0 {
 					c.JSON(200, gin.H{
@@ -445,9 +436,7 @@ func GetClient(c *gin.Context) {
 				})
 			}
 		} else if AdminDecode.Permissions == "admin" && c.Request.URL.RawQuery == "" {
-			fmt.Println("dede")
 			if AdminDecode.Name != "" {
-				log.Println(c.Request.URL.RawQuery)
 				AdminDecode.Password = "null"
 				c.JSON(200, gin.H{
 					"Code": "Request Handeled",

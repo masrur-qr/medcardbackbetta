@@ -11,7 +11,6 @@ import (
 	"medcard-new/begening/controllers/velidation"
 	"medcard-new/begening/evtvariables"
 	"medcard-new/begening/structures"
-	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -33,19 +32,14 @@ var (
 	client *mongo.Client
 )
 
-var redirect_url string = os.Getenv("URL")
-var DB_Url string = os.Getenv("DBURL")
 
 func Authenticationservice() {
-	// clientOptions := options.Client().ApplyURI("mongodb://127.0.0.1:27017")
-	// clientOptions := options.Client().ApplyURI("mongodb://mas:mas@34.148.119.65:27017")
 	clientOptions := options.Client().ApplyURI(evtvariables.DBUrl)
 	clientG, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		log.Println("Mongo.connect() ERROR: ", err)
 	}
 	ctxG, _ := context.WithTimeout(context.Background(), 1*time.Minute)
-	// collection := client.Database("MedCard").Collection("users")
 	ctx = ctxG
 	client = clientG
 }
@@ -69,7 +63,6 @@ func InsertQuestions(c *gin.Context) {
 		log.Printf("Marshel Error: %v\n", err)
 	}
 
-	// checkPointOne, checkPointTwo := velidation.TestTheStruct(c, "questiontitle:questiontext:questionauthorname", string(valueStruct), "FieldsCheck:true,DBCheck:false", "", "")
 	Exist, Empty := velidation.TestTheQuestion(string(valueStruct))
 	if Exist == true  && Empty == false  {
 		var primitiveId = primitive.NewObjectID().Hex()
@@ -90,15 +83,6 @@ func ProfileChange(c *gin.Context) {
 	)
 	jsonFM := c.Request.FormValue("json")
 	_, _, errIMG := c.Request.FormFile("img")
-	// """""""""""""""""""""""check The file on existense"""""""""""""""""""""""
-	// if errIMG != nil {
-	// 	c.JSON(409, gin.H{
-	// 		"sttus": "NOIMGFILEEXIST",
-	// 	})
-	// }
-
-	// files.Seek(23, 23)
-	// log.Printf("File Name %s\n", handler.Filename)
 	// """""""""""""""""""""bind the request data into structure"""""""""""""""""""""
 	json.Unmarshal([]byte(jsonFM), &ChangeStruct)
 	fmt.Printf("ChangeStruct: %v\n", ChangeStruct)
@@ -181,10 +165,6 @@ func ProfileChange(c *gin.Context) {
 				imgid := handlefile.Handlefile(c, "./static/upload")
 				ChangeStruct.ImgUrl = imgid
 			}
-			// ChangeStruct.History = append(ChangeStruct.History, structures.History{
-			// 	Year:     "2022-12",
-			// 	Position: "jfdfdd",
-			// })
 			_, err = collection.ReplaceOne(ctx, bson.M{"_id": CookieData.Id}, ChangeStruct)
 			if err != nil {
 				log.Printf("Err insert", err)

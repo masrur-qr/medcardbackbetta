@@ -37,11 +37,7 @@ func Handlers(){
 	r.GET("/getviews",controllers.GetViews)
 	r.GET("/listviews",controllers.ListViewsAdmin)
 
-	// Port := os.Getenv("PORT")
-	// if Port == ""{
-	// 	Port = "5500"
-	// }
-	// log.Printf("port%v",Port)
+	
 	evtvariables.New()
 	r.Run(":5500")
 }
