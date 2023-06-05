@@ -68,8 +68,8 @@ func Signin(c *gin.Context) {
 			Secure:   true,
 			Path:     "/",
 			SameSite: http.SameSiteNoneMode,
-			MaxAge: 0,
-			Domain: "",
+			MaxAge:   0,
+			Domain:   "",
 		})
 		c.JSON(200, gin.H{
 			"Code":       "Authorised",
@@ -86,6 +86,7 @@ func Signin(c *gin.Context) {
 func Signup(c *gin.Context) {
 	var (
 		SigninStruct structures.Signup
+		allowedHosts = c.GetHeader("Origin")
 	)
 	c.ShouldBindJSON(&SigninStruct)
 	log.Printf("Marshel Eror %v\n", SigninStruct)
@@ -99,40 +100,47 @@ func Signup(c *gin.Context) {
 	// """"""""""""""""""""""""""""""""""DB CONNECTION""""""""""""""""""""""""""""""""""""""""""""""""""""
 	checkPointOne, checkPointTwo := velidation.TestTheStruct(c, "phone:blood:password:name:surname:lastname:birth:gender:disabilaties:adress:workplace", string(valueStruct), "FieldsCheck:true,DBCheck:true", "client", "")
 
-	if checkPointOne != false && strings.Split(SigninStruct.Password, ":")[len(strings.Split(SigninStruct.Password, ":"))-1] == "Create" {
-		primitiveid := primitive.NewObjectID().Hex()
-		hashedPass, err := bycrypt.HashPassword(strings.Split(SigninStruct.Password, ":")[0])
-		log.Println(strings.Split(SigninStruct.Password, ":")[0])
-		if err != nil {
-			log.Printf("Err Hash%v", err)
+	if allowedHosts == evtvariables.IpUrl {
+		if checkPointOne != false && strings.Split(SigninStruct.Password, ":")[len(strings.Split(SigninStruct.Password, ":"))-1] == "Create" {
+			primitiveid := primitive.NewObjectID().Hex()
+			hashedPass, err := bycrypt.HashPassword(strings.Split(SigninStruct.Password, ":")[0])
+			log.Println(strings.Split(SigninStruct.Password, ":")[0])
+			if err != nil {
+				log.Printf("Err Hash%v", err)
+			}
+			SigninStruct.Password = hashedPass
+			SigninStruct.Userid = primitiveid
+			SigninStruct.Permissions = "admin"
+			collection.InsertOne(ctx, SigninStruct)
+			//------------------------------------ Send success-----------------------------------
+			c.JSON(200, gin.H{
+				"Code": "Succeded",
+			})
+		} else if checkPointOne != false && checkPointTwo != false {
+			primitiveid := primitive.NewObjectID().Hex()
+			hashedPass, err := bycrypt.HashPassword(SigninStruct.Password)
+			if err != nil {
+				log.Printf("Err Hash%v", err)
+			}
+			SigninStruct.Password = hashedPass
+			SigninStruct.Userid = primitiveid
+			SigninStruct.Permissions = "client"
+			collection.InsertOne(ctx, SigninStruct)
+			//------------------------------------ Send success-----------------------------------
+			c.JSON(200, gin.H{
+				"Code": "Succeded",
+			})
+		} else if checkPointTwo == false {
+			c.JSON(404, gin.H{
+				"Code": "Error User already exist OR this phone numbers are already taken",
+			})
 		}
-		SigninStruct.Password = hashedPass
-		SigninStruct.Userid = primitiveid
-		SigninStruct.Permissions = "admin"
-		collection.InsertOne(ctx, SigninStruct)
-		//------------------------------------ Send success-----------------------------------
-		c.JSON(200, gin.H{
-			"Code": "Succeded",
-		})
-	} else if checkPointOne != false && checkPointTwo != false {
-		primitiveid := primitive.NewObjectID().Hex()
-		hashedPass, err := bycrypt.HashPassword(SigninStruct.Password)
-		if err != nil {
-			log.Printf("Err Hash%v", err)
-		}
-		SigninStruct.Password = hashedPass
-		SigninStruct.Userid = primitiveid
-		SigninStruct.Permissions = "client"
-		collection.InsertOne(ctx, SigninStruct)
-		//------------------------------------ Send success-----------------------------------
-		c.JSON(200, gin.H{
-			"Code": "Succeded",
-		})
-	}else if checkPointTwo == false {
-		c.JSON(404, gin.H{
-			"Code": "Error User already exist OR this phone numbers are already taken",
+	} else {
+		c.JSON(505, gin.H{
+			"Message": "Unknown Host",
 		})
 	}
+
 }
 func Signout(c *gin.Context) {
 	http.SetCookie(c.Writer, &http.Cookie{
@@ -142,7 +150,7 @@ func Signout(c *gin.Context) {
 		HttpOnly: false,
 		Secure:   true,
 		SameSite: http.SameSiteNoneMode,
-		MaxAge: 0,
+		MaxAge:   0,
 		Path:     "/",
 	})
 	c.JSON(200, gin.H{
@@ -187,6 +195,7 @@ func SignupDoctor(c *gin.Context) {
 		// DecodedSigninStruct structures.Signup
 		SignupDoctor structures.SignupDoctor
 		checkPoint   bool
+		allowedHosts = c.GetHeader("Origin")
 	)
 	// """""""""get he json request from client """""""""
 	jsonFM := c.Request.FormValue("json")
@@ -203,8 +212,6 @@ func SignupDoctor(c *gin.Context) {
 	// """""""""""""""""""""bind the request data into structure"""""""""""""""""""""
 	json.Unmarshal([]byte(jsonFM), &SignupDoctor)
 
-	log.Printf("str %v\n", SignupDoctor)
-	log.Printf("Marshel Eror %v\n", SignupDoctor)
 	valueStruct, err := json.Marshal(SignupDoctor)
 	if err != nil {
 		log.Printf("Marshel Eror %v\n", err)
@@ -216,21 +223,65 @@ func SignupDoctor(c *gin.Context) {
 	checkPointOne, checkPointTwo := velidation.TestTheStruct(c, "phone:password:name:surname:lastname:position", string(valueStruct), "FieldsCheck:true,DBCheck:true", "doctor", "")
 	log.Println(checkPoint)
 
-	if checkPointOne != false && checkPointTwo != false {
-		hashedPass, err := bycrypt.HashPassword(SignupDoctor.Password)
-		if err != nil {
-			log.Printf("Err Hash%v", err)
+	if allowedHosts == evtvariables.IpUrl {
+		if checkPointOne != false && checkPointTwo != false {
+			hashedPass, err := bycrypt.HashPassword(SignupDoctor.Password)
+			if err != nil {
+				log.Printf("Err Hash%v", err)
+			}
+			primitiveid := primitive.NewObjectID().Hex()
+			SignupDoctor.Password = hashedPass
+			SignupDoctor.Userid = primitiveid
+			SignupDoctor.Permissions = "doctor"
+			SignupDoctor.ImgUrl = handlefile.Handlefile(c, "./static/upload")
+
+			collection.InsertOne(ctx, SignupDoctor)
+		} else if checkPointTwo == false {
+			c.JSON(304, gin.H{
+				"Code": "Error User already exist OR this phone numbers are already taken",
+			})
 		}
-		primitiveid := primitive.NewObjectID().Hex()
-		SignupDoctor.Password = hashedPass
-		SignupDoctor.Userid = primitiveid
-		SignupDoctor.Permissions = "doctor"
-		SignupDoctor.ImgUrl = handlefile.Handlefile(c, "./static/upload")
-	
-		collection.InsertOne(ctx, SignupDoctor)
-	}else if checkPointTwo == false {
-		c.JSON(304, gin.H{
-			"Code": "Error User already exist OR this phone numbers are already taken",
-		})	
+	} else {
+		c.JSON(505, gin.H{
+			"Message": "Unknown Host",
+		})
+	}
+}
+
+func ResetPassword(c *gin.Context) {
+	var (
+		allowedHosts = c.GetHeader("Origin")
+		ResetStruct  structures.Reset
+		UserDecode   structures.Reset
+	)
+
+	c.ShouldBindJSON(&ResetStruct)
+	if allowedHosts == evtvariables.IpUrl {
+		if ResetStruct.Phone != "" && ResetStruct.NewPassword == ResetStruct.Password {
+			Authenticationservice()
+			connection := client.Database("MedCard").Collection("users")
+			connection.FindOne(ctx, bson.M{"phone": ResetStruct.Phone}).Decode(&UserDecode)
+			// ? Updating the field
+			HashedPass, _ := bycrypt.HashPassword(ResetStruct.NewPassword)
+			_, err := connection.UpdateMany(ctx, bson.M{
+				"phone": ResetStruct.Phone,
+			},
+				bson.D{
+					{"$set", bson.M{"password": HashedPass}},
+				},
+			)
+			c.JSON(200, gin.H{
+				"Message": "Request successfully handled",
+			})
+			if err != nil {
+				c.JSON(400, gin.H{
+					"Message": "User noy found",
+				})
+			}
+		}
+	} else {
+		c.JSON(505, gin.H{
+			"Message": "Unknown Host",
+		})
 	}
 }

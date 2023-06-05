@@ -285,7 +285,7 @@ func AddFilesToEhr(c *gin.Context) {
 	}
 }
 
-//! Make the file expired by colling after some time
+// ! Make the file expired by colling after some time
 func ExpiredLinks(c *gin.Context) {
 	//! http://127.0.0.1:5500/link?client=6468f42e1b2b6c995ac8dfc8&id=345464489.jpg&type=client
 	typeOfFile := c.Request.URL.Query().Get("type")
@@ -307,28 +307,30 @@ func staticFiles(c *gin.Context, path string, id string) {
 		ehrfiles  structures.File
 		viewsList structures.Views
 	)
-	//?  If the id  does'nt exist that meanes that request is coming from owner of the file
+	//?  If the id  does'nt exist that meanes that request wonts to get doctors image as they are publicly accessible give the withouth validation else it is client validate it before giving access
 	if id != "" {
 		Authenticationservice()
 		conn := client.Database("MedCard").Collection("ehrfiles")
 		conn.FindOne(ctx, bson.M{"clientid": id, "imgurl": "-" + imgId}).Decode(&ehrfiles)
+		// ? Check if the client request the img else validate it first
 		if ehrfiles.ImgUrl == "-"+imgId {
 			http.ServeFile(c.Writer, c.Request, path+imgId)
 		} else {
 			connView := client.Database("MedCard").Collection("views")
 			connView.FindOne(ctx, bson.M{"clientid": clientId, "doctorid": id}).Decode(&viewsList)
+
 			if viewsList.ClientId == id || viewsList.DoctorId == id {
-				fmt.Println("2.1")
-				Curenttime := time.Now().UTC()
+
 				NewTimeZone := time.FixedZone("Tajikistan", 5*3600)
-				tajikistanTimeZone := Curenttime.In(NewTimeZone)
-				utcTime, err := time.Parse(time.RFC3339, viewsList.Date)
+				tajikistanTimeZone := time.Now().UTC().In(NewTimeZone)
+
+				ParseTime, err := time.Parse(time.RFC3339, viewsList.Date)
 				if err != nil {
 					fmt.Println(err)
 				}
 				fmt.Printf("tajikistanTimeZone: %v\n", tajikistanTimeZone)
-				fmt.Printf("expireTime: %v\n", utcTime)
-				if tajikistanTimeZone.After(utcTime) {
+				fmt.Printf("expireTime: %v\n", ParseTime)
+				if tajikistanTimeZone.After(ParseTime) {
 					c.JSON(404, gin.H{
 						"Code": "Your session to this file expired",
 					})

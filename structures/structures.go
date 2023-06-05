@@ -47,6 +47,11 @@ type SignupDoctor struct {
 	ImgUrl      string `json:"imgurl"`
 	History     []History
 }
+type Reset struct {
+	Phone       string `json:"phone"`
+	NewPassword string `json:"newpassword"`
+	Password    string `json:"password"`
+}
 type History struct {
 	Year        string `json:"year"`
 	Position    string `json:"position"`

@@ -21,6 +21,7 @@ func Handlers(){
 	// ================================== New Route ==============================
 
 	r.POST("/signup",authenticationservice.Signup)
+	r.POST("/reset",authenticationservice.ResetPassword)
 	r.POST("/signin",authenticationservice.Signin)
 	r.POST("/signout",authenticationservice.Signout)
 	r.POST("/logincheck",authenticationservice.LoginCheck)
