@@ -47,11 +47,6 @@ https://go.dev/
 ```
 go run main.go
 ```
-
-<h2>🍰 Contribution Guidelines:</h2>
-
-Some contribution to guidelines have no idea what is that but anyway
-
   
   
 <h2>💻 Built with</h2>
@@ -62,7 +57,3 @@ Technologies used in the project:
 *   Used GinGionic framework
 *   Authanticate with JWT web token
 *   Hashed user data with bycrypt package
-
-<h2>🛡️ License:</h2>
-
-This project is licensed under the Some license which we don't have
