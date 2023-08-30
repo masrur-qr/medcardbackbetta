@@ -8,7 +8,6 @@ import (
 	"medcard-new/begening/evtvariables"
 	"medcard-new/begening/structures"
 	"net/http"
-	"os"
 	"strings"
 	"time"
 
@@ -28,10 +27,10 @@ var (
 	ctx    context.Context
 	client *mongo.Client
 )
-var DB_Url string = os.Getenv("DBURL")
 
 func Authenticationservice() {
 	clientOptions := options.Client().ApplyURI(evtvariables.DBUrl)
+
 	clientG, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		log.Println("Mongo.connect() ERROR: ", err)
@@ -61,13 +60,13 @@ func Signin(c *gin.Context) {
 	passwordCHeck := bycrypt.CompareHashPasswords(DecodedSigninStruct.Password, SignupStruct.Password)
 	if checkPointOne != false && checkPointTwo != true && DecodedSigninStruct.Password != "" && passwordCHeck != false {
 		http.SetCookie(c.Writer, &http.Cookie{
-			Name:     "token",
+			Name:     "tokenForUthenticateUser",
 			Value:    jwtgen.GenerateToken(c, SignupStruct.Phone),
 			Expires:  time.Now().Add(30 * time.Hour),
 			HttpOnly: false,
-			Secure:   true,
-			Path:     "/",
-			SameSite: http.SameSiteNoneMode,
+			Secure:   false,
+			// Path:     "/",
+			// SameSite: http.SameSiteNoneMode,
 			MaxAge:   0,
 			Domain:   "",
 		})
@@ -144,12 +143,12 @@ func Signup(c *gin.Context) {
 }
 func Signout(c *gin.Context) {
 	http.SetCookie(c.Writer, &http.Cookie{
-		Name:     "token",
+		Name:     "expire",
 		Value:    "nul",
 		Expires:  time.Now().Add(-20 * time.Hour),
 		HttpOnly: false,
-		Secure:   true,
-		SameSite: http.SameSiteNoneMode,
+		Secure:   false,
+		// SameSite: http.SameSiteNoneMode,
 		MaxAge:   0,
 		Path:     "/",
 	})

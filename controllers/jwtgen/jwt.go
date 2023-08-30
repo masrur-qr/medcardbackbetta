@@ -68,7 +68,7 @@ func GenerateToken(c *gin.Context,phone string) string {
 
 func Velidation(c *gin.Context) ClaimsTok {
 	// We can obtain the session token from the requests cookies, which come with every request
-	cookie, err := c.Request.Cookie("token")
+	cookie, err := c.Request.Cookie("tokenForUthenticateUser")
 	if err != nil {
 		c.JSON(400,gin.H{
 			"status":"COOKIE_DOES_NOT_EXIST",
