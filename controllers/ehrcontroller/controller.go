@@ -64,7 +64,11 @@ func DoctorClientForView(c *gin.Context) {
 		Date := strings.Split(splitedDate[2], ";")[0]
 		Hour, _ := strconv.Atoi(splitedTime[0])
 		Minute := splitedTime[1]
-		dateZoneFormat = fmt.Sprintf("%v-0%v-%vT%v:%v:%v+%v", Year, Month, Date, Hour, Minute, "00", "05:00")
+		if Month > 9 {
+			dateZoneFormat = fmt.Sprintf("%v-%v-%vT%v:%v:%v+%v", Year, Month, Date, Hour, Minute, "00", "05:00")
+		}else if Month < 9 && Month > 0{
+			dateZoneFormat = fmt.Sprintf("%v-0%v-%vT%v:%v:%v+%v", Year, Month, Date, Hour, Minute, "00", "05:00")
+		}
 	}
 
 	// """"""""""""""""""""""""""""""""""DB CONNECTION""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -111,7 +115,10 @@ func DoctorClientForView(c *gin.Context) {
 		// ? Set new time and validate it if it is expired date
 		now := time.FixedZone("tajikistan", 5*3600)
 
-		dateZoneFormatParse, _ := time.Parse(time.RFC3339, dateZoneFormat)
+		dateZoneFormatParse, err := time.Parse(time.RFC3339, dateZoneFormat)
+		if err != nil {
+			log.Printf("Insert %v\n", err)
+		}
 		if ViewStructDecode.Sickness != "" && isPassedFields == true && time.Now().In(now).Before(dateZoneFormatParse) {
 			collection.DeleteOne(ctx, bson.M{"clientid": ViewStruct.ClientId, "doctorid": ViewStruct.DoctorId})
 

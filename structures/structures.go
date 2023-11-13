@@ -118,3 +118,23 @@ type IpDB struct {
 	Ip   string `json:"ip"`
 	Data string `json:"data"`
 }
+var PathSlices = []string{
+	"/insertquestion",
+	"/profilechange",
+	"/link",
+	"/signup",
+	"/reset",
+	"/signin",
+	"/signout",
+	"/logincheck",
+	"/signupdoctor",
+	"/handleviews",
+	"/filesadd",
+	"/getclient",
+	"/getquestion",
+	"/getdoctors",
+	"/statistics",
+	"/getclients",
+	"/getviews",
+	"/listviews",
+}
