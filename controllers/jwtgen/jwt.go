@@ -35,7 +35,7 @@ func GenerateToken(c *gin.Context,phone string) string {
 	clientOptions := options.Client().ApplyURI(evtvariables.DBUrl)
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
-		log.Println("Mongo.connect() ERROR: ", err)
+		log.Println("Mongo.connect() ERROR: 4", err)
 	}
 	ctx, _ := context.WithTimeout(context.Background(), 15*time.Minute)
 	// collection := client.Database("MedCard").Collection("questions")

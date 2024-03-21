@@ -33,7 +33,7 @@ func Authenticationservice() {
 
 	clientG, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
-		log.Println("Mongo.connect() ERROR: ", err)
+		log.Println("Mongo.connect() ERROR: 1", err)
 	}
 	ctxG, _ := context.WithTimeout(context.Background(), 15*time.Minute)
 	ctx = ctxG
@@ -68,7 +68,7 @@ func Signin(c *gin.Context) {
 			// Path:     "/",
 			// SameSite: http.SameSiteNoneMode,
 			MaxAge:   0,
-			Domain:   "",
+			Domain:   ".medcard.space",
 		})
 		c.JSON(200, gin.H{
 			"Code":       "Authorised",
@@ -151,6 +151,7 @@ func Signout(c *gin.Context) {
 		// SameSite: http.SameSiteNoneMode,
 		MaxAge:   0,
 		Path:     "/",
+		Domain:   ".medcard.space",
 	})
 	c.JSON(200, gin.H{
 		"Code": "Succeded",

@@ -37,7 +37,7 @@ func Authenticationservice() {
 	clientOptions := options.Client().ApplyURI(evtvariables.DBUrl)
 	clientG, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
-		log.Println("Mongo.connect() ERROR: ", err)
+		log.Println("Mongo.connect() ERROR:3 ", err)
 	}
 	ctxG, _ := context.WithTimeout(context.Background(), 1*time.Minute)
 	ctx = ctxG
