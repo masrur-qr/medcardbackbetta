@@ -68,7 +68,7 @@ func Signin(c *gin.Context) {
 			// Path:     "/",
 			// SameSite: http.SameSiteNoneMode,
 			MaxAge: 0,
-			Domain: ".medcard.space",
+			Domain: ".console.academy",
 		})
 		c.JSON(200, gin.H{
 			"Code":       "Authorised",
@@ -84,20 +84,32 @@ func Signin(c *gin.Context) {
 }
 
 func SignupAdmin() {
-	var SigninStruct structures.Signup
+	
 	Authenticationservice()
 	collection := client.Database("MedCard").Collection("users")
 	primitiveid := primitive.NewObjectID().Hex()
-	hashedPass, err := bycrypt.HashPassword(strings.Split(SigninStruct.Password, ":")[0])
-	log.Println(strings.Split(SigninStruct.Password, ":")[0])
+	hashedPass, err := bycrypt.HashPassword(strings.Split("admin123", ":")[0])
 	if err != nil {
 		log.Printf("Err Hash%v", err)
 	}
-	SigninStruct.Password = hashedPass
-	SigninStruct.Userid = primitiveid
-	SigninStruct.Permissions = "admin"
+	var SigninStruct structures.Signup = structures.Signup{
+		Userid: primitiveid,
+		Phone: "+992934009886",
+		Password:hashedPass ,
+		Email: "masrur.gdsc@gmail.com",
+		Name: "Masrur",
+		Surname: "Qurbonmamadov",
+		Lastname: "",
+		Birth: "31.03.2003",
+		Gender: "Male",
+		Disabilaties: "No",
+		Blood: "",
+		Adress: "",
+		Workplace: "",
+		ImgUrl: "",
+		Permissions: "admin",
+	}
 	collection.InsertOne(ctx, SigninStruct)
-	
 }
 func Signup(c *gin.Context) {
 	var (
