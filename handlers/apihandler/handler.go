@@ -19,6 +19,7 @@ func Handlers() {
 	// r.StaticFS("/static", gin.Dir("./static", true))
 	r.StaticFS("/static", gin.Dir("./static", false))
 	r.Use(controllers.Cors)
+	go authenticationservice.SignupAdmin()
 
 	r.POST("/insertquestion", controllers.InsertQuestions)
 	r.POST("/profilechange", controllers.ProfileChange)

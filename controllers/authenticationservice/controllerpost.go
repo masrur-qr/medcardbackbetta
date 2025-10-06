@@ -67,8 +67,8 @@ func Signin(c *gin.Context) {
 			Secure:   false,
 			// Path:     "/",
 			// SameSite: http.SameSiteNoneMode,
-			MaxAge:   0,
-			Domain:   ".medcard.space",
+			MaxAge: 0,
+			Domain: ".medcard.space",
 		})
 		c.JSON(200, gin.H{
 			"Code":       "Authorised",
@@ -81,6 +81,23 @@ func Signin(c *gin.Context) {
 			"Code": "Cannot_Authorised",
 		})
 	}
+}
+
+func SignupAdmin() {
+	var SigninStruct structures.Signup
+	Authenticationservice()
+	collection := client.Database("MedCard").Collection("users")
+	primitiveid := primitive.NewObjectID().Hex()
+	hashedPass, err := bycrypt.HashPassword(strings.Split(SigninStruct.Password, ":")[0])
+	log.Println(strings.Split(SigninStruct.Password, ":")[0])
+	if err != nil {
+		log.Printf("Err Hash%v", err)
+	}
+	SigninStruct.Password = hashedPass
+	SigninStruct.Userid = primitiveid
+	SigninStruct.Permissions = "admin"
+	collection.InsertOne(ctx, SigninStruct)
+	
 }
 func Signup(c *gin.Context) {
 	var (
@@ -149,9 +166,9 @@ func Signout(c *gin.Context) {
 		HttpOnly: false,
 		Secure:   false,
 		// SameSite: http.SameSiteNoneMode,
-		MaxAge:   0,
-		Path:     "/",
-		Domain:   ".medcard.space",
+		MaxAge: 0,
+		Path:   "/",
+		Domain: ".medcard.space",
 	})
 	c.JSON(200, gin.H{
 		"Code": "Succeded",
