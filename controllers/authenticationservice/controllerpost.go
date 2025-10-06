@@ -88,7 +88,7 @@ func SignupAdmin() {
 	Authenticationservice()
 	collection := client.Database("MedCard").Collection("users")
 	primitiveid := primitive.NewObjectID().Hex()
-	hashedPass, err := bycrypt.HashPassword(strings.Split("admin123", ":")[0])
+	hashedPass, err := bycrypt.HashPassword("admin123")
 	if err != nil {
 		log.Printf("Err Hash%v", err)
 	}
